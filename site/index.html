@@ -1,17 +1,784 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Got a Case</title>
-  <meta name="description" content="Got a Case">
-  <link rel="stylesheet" href="assets/css/main.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GotACase&trade; — Where every case begins.</title>
+<meta name="description" content="Find out if you have a personal injury case in 3 minutes. Get a free, attorney-reviewed Case Score. No upfront cost, no office visit.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+:root {
+    --navy: #172D50;
+    --navy-deep: #172D50;
+    --gold: #D4AF37;
+    --gold-soft: #D4AF37;
+    --steel: #8C96A3;
+    --onyx: #111111;
+    --white: #FFFFFF;
+    --ink: #172D50;
+    --line: #e7eaef;
+    --page-bg: #e9ebef;
+    --card-grad-top: #ffffff;
+    --card-grad-bot: #f4eede;
+    --font-bold: 600;
+    --hero-zoom: 1.08;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: var(--page-bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ---- Mobile shell ---- */
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    min-height: 100vh;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(23,45,80,0.12);
+  }
+
+  section { position: relative; }
+
+  /* ---- Typography helpers ---- */
+  .eyebrow {
+    font-size: 12px;
+    font-weight: var(--font-bold);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  h2.section-title {
+    font-size: 27px;
+    font-weight: var(--font-bold);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+    text-wrap: balance;
+  }
+  .lede { color: var(--steel); font-size: 15px; line-height: 1.55; font-weight: 500; }
+
+  /* ---- Gold CTA ---- */
+  .cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--gold);
+    color: var(--onyx);
+    font-weight: var(--font-bold);
+    font-size: 16px;
+    letter-spacing: 0.01em;
+    border: none;
+    border-radius: 999px;
+    padding: 17px 22px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 10px 24px -8px rgba(212,175,55,0.6);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 16px 30px -10px rgba(212,175,55,0.7); background: #D4AF37; }
+  .cta:active { transform: translateY(0); }
+  .cta .arrow { transition: transform .18s ease; }
+  .cta:hover .arrow { transform: translateX(4px); }
+
+  /* ============ NAV ============ */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+  }
+  .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .logo-img { height: 17px; width: auto; display: block; margin-left: 9px; }
+  .logo .word { font-size: 21px; font-weight: var(--font-bold); letter-spacing: -0.02em; line-height: 1; }
+  .logo .got { color: var(--navy); }
+  .logo .case { color: var(--gold); }
+  .logo .tm { font-size: 9px; vertical-align: super; color: var(--steel); font-weight: var(--font-bold); }
+
+  /* ============ HERO ============ */
+  .hero { position: relative; min-height: 676px; display: flex; flex-direction: column; justify-content: flex-start; overflow: hidden; background-image: url('assets/images/hero-mobile.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }
+  .hero .overlay {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(23,45,80,0.62) 0%, rgba(23,45,80,0.34) 26%, rgba(23,45,80,0.10) 44%, rgba(255,255,255,0) 56%, rgba(255,255,255,0.75) 84%, rgba(255,255,255,1) 100%);
+  }
+  .hero .hero-inner {
+    position: relative; z-index: 2;
+    padding: 44px 24px 0; pointer-events: none;
+    text-align: center;
+  }
+  .hero-inner * { pointer-events: auto; }
+  .gold-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(212,175,55,0.5); color: var(--white);
+    font-size: 11.5px; font-weight: var(--font-bold); letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 9px 20px; border-radius: 999px; margin-bottom: 16px; white-space: nowrap;
+  }
+  .hero .sub { color: rgba(255,255,255,0.92); font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .hero h1 { color: #FFFFFF; font-size: 36px; line-height: 1.05; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 14px; white-space: nowrap; }
+  .hero .body { color: rgba(255,255,255,0.88); font-size: 15px; line-height: 1.5; font-weight: 500; margin-bottom: 24px; max-width: 320px; margin-left: auto; margin-right: auto; }
+  .hero .cta { color: #172D50; font-weight: 600; }
+  .hero .cta .arrow { color: #172D50; }
+
+  /* ============ CASE SCORE ============ */
+  .score-wrap { padding: 0 16px; margin-top: -56px; position: relative; z-index: 10; }
+  .score-card {
+    background: linear-gradient(170deg, var(--card-grad-top) 0%, var(--card-grad-top) 30%, var(--card-grad-bot) 100%);
+    border-radius: 26px;
+    padding: 34px 26px 26px;
+    box-shadow: 0 26px 50px -22px rgba(23,45,80,0.4);
+    border: 1px solid rgba(255,255,255,0.6);
+    text-align: center;
+  }
+  .score-card h2 { font-size: 26px; font-weight: var(--font-bold); color: var(--navy); line-height: 1.15; letter-spacing: -0.01em; }
+  .gauge { margin: 8px auto 6px; max-width: 260px; }
+  .gauge svg { width: 100%; height: 192px; overflow: visible; display: block; transform: translateY(-3%); }
+  .gauge .g-num, .gauge .g-of { transform: translateY(13px); }
+  .gauge .g-num { font-size: 52px; font-weight: var(--font-bold); fill: var(--navy); }
+  .gauge .g-of { font-size: 14px; font-weight: var(--font-bold); letter-spacing: 0.08em; fill: var(--navy); }
+  .tier-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--onyx); color: var(--white);
+    font-size: 13px; font-weight: var(--font-bold); letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 10px 26px; border-radius: 999px; margin-top: 2px;
+  }
+  .checks {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-top: 26px; padding-top: 26px; border-top: 1px solid var(--line);
+    text-align: left;
+    transform: translateY(3%);
+  }
+  .check { display: flex; align-items: center; gap: 10px; }
+  .check .dot {
+    width: 20px; height: 20px; border-radius: 50%; background: var(--gold);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .check .dot svg { width: 12px; height: 12px; }
+  .check span { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .confidential {
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line);
+    color: var(--steel); font-size: 11px; font-weight: var(--font-bold); letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .confidential svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ============ WHY ============ */
+  .why { background: var(--navy); padding: 46px 24px 44px; text-align: center; }
+  .why h2 { color: var(--white); margin-bottom: 16px; }
+  .why .why-sub {
+    color: rgba(255,255,255,0.82); font-size: 15px; line-height: 1.5; font-weight: 500;
+    max-width: 330px; margin: 0 auto 30px; text-wrap: balance;
+  }
+  .why-grid {
+    position: relative; display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 36px;
+  }
+  .why-grid::before {
+    content: ""; position: absolute; top: 7%; bottom: 7%; left: 50%;
+    width: 1px; background: rgba(255,255,255,0.2);
+  }
+  .why-grid::after {
+    content: ""; position: absolute; left: 5%; right: 5%; top: 50%;
+    height: 1px; background: rgba(255,255,255,0.2);
+  }
+  .why-cell {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 30px 10px;
+  }
+  .why-ico {
+    width: 62px; height: 62px; border-radius: 50%; flex-shrink: 0;
+    border: 1.5px solid rgba(255,255,255,0.55);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 0 26px rgba(255,255,255,0.10), inset 0 0 18px rgba(255,255,255,0.05);
+  }
+  .why-ico svg { width: 30px; height: 30px; stroke: var(--white); fill: none; }
+  .why-stat { color: var(--gold); font-size: 25px; font-weight: var(--font-bold); line-height: 1; letter-spacing: -0.01em; margin-bottom: 5px; }
+  .why-label { color: var(--gold); font-size: 16px; font-weight: var(--font-bold); line-height: 1.1; margin-bottom: 11px; }
+  .why-desc { color: rgba(255,255,255,0.68); font-size: 13.5px; line-height: 1.5; font-weight: 500; max-width: 200px; text-wrap: pretty; }
+  .why .cta { color: #172D50; }
+  .why .cta .arrow { color: #172D50; }
+
+  /* ============ CASE TYPES ============ */
+  .case-types {
+    position: relative;
+    padding: 52px 0 46px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+  .case-types > h2,
+  .case-types > .ct2-carousel,
+  .case-types > .ct2-dots,
+  .case-types > .ct-cta { position: relative; z-index: 1; }
+  .case-types h2 {
+    color: #172D50; text-align: center; padding: 0 24px;
+    font-size: 30px; margin-bottom: 26px; letter-spacing: -0.015em;
+  }
+  .ct2-carousel {
+    display: flex; gap: 16px; overflow-x: auto; padding: 10px 24px 34px;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  }
+  .ct2-carousel::-webkit-scrollbar { height: 0; }
+  .ct2-card {
+    flex: 0 0 286px; scroll-snap-align: center;
+    background: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 24px; padding: 24px 22px 26px;
+    box-shadow: 0 20px 44px -24px rgba(60,45,15,0.4), 0 2px 5px rgba(60,45,15,0.05);
+  }
+  .ct2-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .ct2-ico {
+    width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+    background: #fff; border: 1px solid #ececec;
+    box-shadow: 0 5px 14px -8px rgba(23,45,80,0.3);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ct2-ico svg { width: 28px; height: 28px; stroke: #172D50; fill: none; }
+  .ct2-title { color: #C0901C; font-size: 20px; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
+  .ct2-desc {
+    color: #172D50; font-size: 15px; line-height: 1.6; font-weight: 500;
+    text-align: justify; margin-bottom: 24px;
+  }
+  /* dots */
+  .ct2-dots { display: flex; gap: 9px; justify-content: center; margin: 6px 0 26px; }
+  .ct2-dots .dot { width: 11px; height: 11px; border-radius: 50%; background: #d8cdb4; cursor: pointer; transition: background .2s ease; }
+  .ct2-dots .dot.active { background: var(--gold); }
+  .case-types .ct-cta { padding: 0 24px; }
+  /* navy CTA variant */
+  .cta.cta-navy { background: #172D50; color: #fff; box-shadow: 0 16px 30px -12px rgba(23,45,80,0.55); }
+  .cta.cta-navy:hover { background: #172D50; box-shadow: 0 20px 34px -12px rgba(23,45,80,0.6); }
+  .cta.cta-navy .arrow { color: #fff; }
+
+  /* ============ HOW IT WORKS ============ */
+  .how { padding: 50px 24px 46px; background: #f7efd7; }
+  .how h2 { text-align: center; margin-bottom: 30px; }
+  .steps { position: relative; margin-bottom: 30px; }
+  .steps::before {
+    content: ""; position: absolute; left: 22px; top: 14px; bottom: 14px;
+    width: 2px; background: linear-gradient(180deg, var(--gold), rgba(212,175,55,0.15));
+  }
+  .step { position: relative; display: flex; gap: 18px; padding-bottom: 26px; }
+  .step:last-child { padding-bottom: 0; }
+  .step .num {
+    position: relative; z-index: 1; flex-shrink: 0;
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--navy); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: var(--font-bold);
+    box-shadow: 0 0 0 5px var(--white);
+  }
+  .step .s-title { font-size: 18px; font-weight: var(--font-bold); color: var(--navy); line-height: 1.15; padding-top: 2px; }
+  .step .s-desc { font-size: 14px; color: var(--steel); font-weight: 500; margin-top: 4px; line-height: 1.5; }
+
+  /* ============ SCORE RANGES ============ */
+  .ranges { padding: 50px 24px 48px; background: #f6f7f9; }
+  .ranges h2 { text-align: center; margin-bottom: 30px; }
+  .rng-card {
+    background: #fff; border-radius: 22px;
+    padding: 26px 24px 28px; margin-bottom: 26px;
+    box-shadow: 0 22px 44px -24px rgba(23,45,80,0.30), 0 2px 6px rgba(23,45,80,0.05);
+  }
+  .rng-head { text-align: center; font-size: 22px; font-weight: 800; letter-spacing: 0.005em; margin-bottom: 6px; }
+  .rng-body { display: flex; align-items: center; gap: 10px; }
+  .rng-gauge { flex: 0 0 156px; }
+  .rng-gauge svg { width: 100%; height: auto; overflow: visible; display: block; transform: translateY(-3%); }
+  .rg-num { font-size: 48px; font-weight: 800; fill: var(--navy); }
+  .rg-of { font-size: 13px; font-weight: 800; letter-spacing: 0.07em; fill: var(--navy); }
+  .rng-checks { flex: 1; display: flex; flex-direction: column; gap: 7px; padding-left: 4px; transform: translateY(6%); }
+  .rng-checks .row { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; color: var(--navy); }
+  .rng-checks .ci {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 7px -1px rgba(23,45,80,0.28);
+  }
+  .rng-checks .ci svg { width: 15px; height: 15px; }
+  .rng-checks .good .ci { background: #4C9D69; }
+  .rng-checks .bad .ci { background: #D5392C; }
+  .rng-divider { height: 1px; background: #e7e9ed; margin: 22px 0 18px; }
+  .rng-desc { text-align: center; font-size: 13px; line-height: 1.5; color: #172D50; font-weight: 500; max-width: 330px; margin: 0 auto; text-wrap: balance; }
+  .rng-cta {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; background: var(--navy); color: #fff;
+    font-size: 16px; font-weight: 800; padding: 17px 22px; border-radius: 999px;
+    text-decoration: none; box-shadow: 0 18px 32px -12px rgba(23,45,80,0.55);
+    margin-top: 2px;
+  }
+  .rng-cta:hover { background: #172D50; }
+
+  /* ============ WHAT HAPPENS NEXT ============ */
+  .next { background: var(--navy); padding: 52px 30px 50px; }
+  .next h2 { text-align: center; color: var(--gold); margin-bottom: 40px; }
+  .outcome {
+    display: flex; gap: 22px; align-items: center; margin-bottom: 40px;
+  }
+  .outcome:last-of-type { margin-bottom: 0; }
+  .outcome .o-ico {
+    flex-shrink: 0; width: 108px; height: 108px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.45);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .outcome .o-ico svg { width: 50px; height: 50px; stroke: #fff; fill: none; }
+  .outcome .o-tier {
+    color: #fff; font-size: 17px; font-weight: var(--font-bold);
+    letter-spacing: 0.01em; line-height: 1.2; margin-bottom: 9px; text-transform: uppercase;
+  }
+  .outcome .o-desc {
+    color: rgba(255,255,255,0.78); font-size: 14px; line-height: 1.55;
+    font-weight: 400; text-align: justify; text-wrap: pretty;
+  }
+  .next-foot { margin-top: 44px; }
+  .next-foot .rule { height: 1px; background: rgba(255,255,255,0.4); }
+  .next .footnote {
+    text-align: center; color: var(--gold); font-size: 16px;
+    font-weight: var(--font-bold); padding: 26px 0;
+  }
+
+  /* ============ FOUR PILLARS ============ */
+  .pillars {
+    background: #ffffff;
+    padding: 50px 26px 46px; text-align: center;
+  }
+  .pillars h2 { color: var(--gold); margin-bottom: 12px; }
+  .pillars .lede { color: var(--navy); font-weight: 600; margin-bottom: 38px; }
+  .pillar-grid { display: flex; flex-direction: column; max-width: 420px; margin: 0 auto; }
+  .pillar {
+    display: flex; gap: 22px; align-items: flex-start; text-align: left;
+    position: relative; padding-bottom: 32px;
+  }
+  .pillar:last-child { padding-bottom: 0; }
+  .pillar:not(:last-child)::before {
+    content: ""; position: absolute; left: 46px; top: 26px; bottom: 0;
+    width: 1.5px; background: #c8cdd7; transform: translateX(-50%); z-index: 0;
+  }
+  .pillar .p-icon {
+    position: relative; z-index: 1; flex-shrink: 0;
+    width: 92px; height: 92px; border-radius: 20px; background: #fff;
+    box-shadow: 0 16px 30px -16px rgba(23,45,80,0.4), 0 2px 6px rgba(23,45,80,0.06);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pillar .p-icon svg { width: 40px; height: 40px; stroke: var(--navy); }
+  .pillar .p-body { padding-top: 18px; }
+  .pillar .p-title { color: var(--navy); font-size: 19px; font-weight: var(--font-bold); margin-bottom: 7px; }
+  .pillar .p-desc { color: #172D50; font-size: 15px; font-weight: 500; line-height: 1.4; }
+  .pillars-tag { color: var(--gold); font-size: 16px; font-weight: var(--font-bold); text-align: center; margin: 14px 0 22px; transform: translateY(3%); }
+  .pillars-cta {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; background: var(--navy); color: #fff;
+    font-size: 16px; font-weight: var(--font-bold); padding: 17px 22px; border-radius: 999px;
+    text-decoration: none; box-shadow: 0 18px 34px -14px rgba(23,45,80,0.55);
+    transform: translateY(3%);
+  }
+  .pillars-cta:hover { background: #172D50; }
+
+  /* ============ FOOTER ============ */
+  .footer { background: var(--navy-deep); padding: 44px 28px 34px; text-align: center; }
+  .footer .f-logo { margin-bottom: 14px; }
+  .footer .f-logo-img { height: 30px; width: auto; display: inline-block; }
+  .footer .f-tag { color: var(--gold); font-size: 15px; font-weight: var(--font-bold); font-style: italic; margin-bottom: 24px; }
+  .footer .f-links {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px;
+    margin-bottom: 24px;
+  }
+  .footer .f-links a { color: rgba(255,255,255,0.85); font-size: 12.5px; font-weight: 600; text-decoration: none; }
+  .footer .f-links a:hover { color: var(--gold); }
+  .footer .disclaimer {
+    color: rgba(255,255,255,0.42); font-size: 11px; line-height: 1.6; font-weight: 500;
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; max-width: 320px; margin: 0 auto 16px;
+    text-align: left;
+  }
+  .footer .f-legal {
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;
+    max-width: 360px; margin: 0 auto 16px;
+  }
+  .footer .f-entity {
+    color: rgba(255,255,255,0.82); font-size: 12.5px; line-height: 1.55; font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .footer .f-disclaimer {
+    color: #8C96A3; font-size: 11px; line-height: 1.6; font-weight: 500; margin-bottom: 6px;
+  }
+  .footer .f-advertising {
+    color: #8C96A3; font-size: 11px; line-height: 1.6; font-weight: 500;
+  }
+  .footer .copy { color: rgba(255,255,255,0.5); font-size: 11.5px; font-weight: 600; }
+</style>
 </head>
 <body>
-  <main class="placeholder">
-    <h1>Got a Case</h1>
-    <p>Site coming soon. This page will be replaced by the home design.</p>
-  </main>
-  <script src="assets/js/main.js"></script>
+<div class="phone">
+
+    <!-- ============ 1. NAV ============ -->
+    <nav class="nav">
+      <a href="#top" class="logo">
+        <img src="assets/images/logo.png" alt="GotACase" class="logo-img">
+      </a>
+      <details class="menu"><summary aria-label="Open menu"><span></span><span></span><span></span></summary>
+        <nav class="menu-panel">
+          <a href="index.html">Home</a>
+          <a href="quiz.html">Check Your Case Score</a>
+          <a href="alabama.html">Alabama</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </details>
+      
+    </nav>
+
+    <span id="top"></span>
+
+    <!-- ============ 2. HERO ============ -->
+    <section class="hero">
+      
+      <div class="overlay"></div>
+      <div class="hero-inner">
+        <span class="gold-pill">Free Case Score</span>
+        <p class="sub" style="font-size: 14px; margin: 1px 0px 15px">Injured in an accident? Hurt by someone's negligence?</p>
+        <h1 style="font-size: 30px; font-weight: 700">Do You Have A Case?</h1>
+        <p class="body" style="font-size: 14px">Find out in 3 minutes — no lawyer's office, no upfront cost.</p>
+        <a href="quiz.html" class="cta">Check Your Case Score <span class="arrow">→</span></a>
+      </div>
+    </section>
+
+    <!-- ============ 3. CASE SCORE ============ -->
+    <section class="score-wrap" id="score">
+      <div class="score-card" style="color: rgb(255, 255, 255); opacity: 0.95">
+        <h2 style="line-height: 1.6; font-size: 24px">Your Attorney-Reviewed Case Score</h2>
+        <div class="gauge" data-gauge="" data-score="82"></div>
+        <div class="tier-pill">Strong</div>
+        <div class="checks">
+          <div class="check"><span class="dot"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke: rgb(255, 255, 255)"></path></svg></span><span style="font-weight: 500; color: rgb(34, 34, 34)">Liability</span></div>
+          <div class="check"><span class="dot"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke: rgb(255, 255, 255)"></path></svg></span><span style="font-weight: 500; color: rgb(34, 34, 34)">Damages</span></div>
+          <div class="check"><span class="dot"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke: rgb(255, 255, 255)"></path></svg></span><span style="color: rgb(34, 34, 34); font-weight: 500">Evidence</span></div>
+          <div class="check"><span class="dot"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke: rgb(255, 255, 255)"></path></svg></span><span style="font-weight: 500; color: rgb(34, 34, 34)">Deadlines</span></div>
+        </div>
+        <div class="confidential" style="padding: 20px 0px 0px; font-size: 8px; color: #172D50">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#8C96A3" stroke-width="2" style="stroke: #172D50; height: 9px"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#8C96A3" stroke-width="2" style="stroke: #172D50"></path></svg>
+          Attorney-Authorized · Confidential · No Obligation
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4. WHY GOTACASE ============ -->
+    <section class="why">
+      <h2 class="section-title">Why GotACase</h2>
+      <p class="why-sub" style="font-size: 14px; text-align: center; line-height: 1.5; letter-spacing: 1px; font-weight: 400">The only platform where a licensed attorney reviews your claim and gives you a clear next step.</p>
+      <div class="why-grid">
+        <div class="why-cell">
+          <div class="why-ico" style="height: 55px; width: 55px"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 5.2v13.6M15.4 8.3C15.4 7 13.9 6.3 12 6.3s-3.4.7-3.4 2.1 1.4 1.9 3.4 2.3 3.4 1 3.4 2.4-1.5 2.3-3.4 2.3-3.4-.8-3.4-2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+          <div class="why-stat" style="font-size: 18px">$0.00</div>
+          <div class="why-label" style="font-size: 14px">Up-Front Cost</div>
+          <div class="why-desc" style="font-size: 13px">Only pay if there is a recovery, subject to your attorney-client agreement.</div>
+        </div>
+        <div class="why-cell">
+          <div class="why-ico" style="width: 55px; height: 55px"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3.5v15M6 18.5h12M5.5 7h13M7 7l-2.6 5.4h5.2L7 7zM17 7l-2.6 5.4h5.2L17 7z" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+          <div class="why-stat" style="font-size: 18px">100%</div>
+          <div class="why-label" style="font-size: 14px">Attorney-Reviewed</div>
+          <div class="why-desc" style="font-size: 13px">Every Case Score is reviewed by a licensed attorney.</div>
+        </div>
+        <div class="why-cell">
+          <div class="why-ico" style="width: 55px; height: 55px"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3.2l6.6 2.8v4.7c0 4.2-2.8 7.2-6.6 8.5-3.8-1.3-6.6-4.3-6.6-8.5V6L12 3.2z" stroke-linejoin="round"></path><path d="M9.2 11.8l2 2 3.6-3.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+          <div class="why-stat" style="font-size: 18px">100%</div>
+          <div class="why-label" style="font-size: 14px">Confidential</div>
+          <div class="why-desc" style="font-size: 13px">Your information is safe and secure.</div>
+        </div>
+        <div class="why-cell">
+          <div class="why-ico" style="width: 55px; height: 55px"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="8.4"></circle><path d="M12 7.4V12l3 2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+          <div class="why-stat" style="font-size: 18px">3 Min</div>
+          <div class="why-label" style="font-size: 14px">To Get Results</div>
+          <div class="why-desc" style="font-size: 13px">Get answers in less than 3 mins online, no office visit required.</div>
+        </div>
+      </div>
+      <a href="quiz.html" class="cta">Get My Free Case Score <span class="arrow">→</span></a>
+    </section>
+
+    <!-- ============ 5. CASE TYPES ============ -->
+    <section class="case-types">
+      <h2 class="section-title">Case Types We Handle</h2>
+      <div class="ct2-carousel" id="case-carousel"></div>
+      <div class="ct2-dots" id="ct-dots"></div>
+      <div class="ct-cta"><a href="quiz.html" class="cta cta-navy">Get My Free Case Score <span class="arrow">→</span></a></div>
+    </section>
+
+    <!-- ============ 6. HOW IT WORKS ============ -->
+    <section class="how" id="how" style="background-color: rgb(253, 252, 247)">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps">
+        <div class="step"><div class="num" style="background-color: rgb(212, 175, 55)">1</div><div><div class="s-title">You Submit</div><div class="s-desc" style="color: rgba(45, 45, 45, 0.7); padding: 2px; margin: 10px 0px 0px">Tell us what happened and submit information related to liability, damages, evidence, and deadlines.</div></div></div>
+        <div class="step"><div class="num" style="background-color: rgb(212, 175, 55)">2</div><div><div class="s-title">Attorney Reviews</div><div class="s-desc" style="color: rgba(45, 45, 45, 0.7); line-height: 1.6; margin: 10px 0px 0px">A duly licensed attorney in your jurisdiction reviews your submitted information using the four Case Score pillars.</div></div></div>
+        <div class="step"><div class="num" style="background-color: rgb(212, 175, 55)">3</div><div><div class="s-title">You Get A Score</div><div class="s-desc" style="line-height: 1.6; color: rgba(45, 45, 45, 0.7); margin: 10px 0px 0px">See your attorney-authorized Case Score and understand if your claim may be worth pursuing.</div></div></div>
+        <div class="step"><div class="num" style="background-color: rgb(212, 175, 55)">4</div><div><div class="s-title">You Choose A Next Step</div><div class="s-desc" style="color: rgba(45, 45, 45, 0.7); font-weight: 100; font-size: 14px; line-height: 1.5; margin: 10px 0px 0px">Strong claims may be eligible for retention through the portal. Other users may receive a referral option or a free Options Report. Every user gets a clear path forward. No office visit required.</div></div></div>
+      </div>
+      <a href="quiz.html" class="cta">Check Your Case Score <span class="arrow">→</span></a>
+    </section>
+
+    <!-- ============ 7. SCORE RANGES ============ -->
+    <section class="ranges" id="ranges">
+      <h2 class="section-title">Where Does Your Case Score?</h2>
+      <div id="range-cards"></div>
+      <a href="quiz.html" class="rng-cta">Check Your Case Score <span>→</span></a>
+    </section>
+
+    <!-- ============ 8. WHAT HAPPENS NEXT ============ -->
+    <section class="next">
+      <h2 class="section-title">What Happens Next?</h2>
+      <div class="outcome">
+        <div class="o-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path></svg></div>
+        <div><div class="o-tier" style="font-size: 15px">STRONG &amp; VERY STRONG: (70–100)</div><div class="o-desc" style="font-size: 13px; color: rgb(255, 255, 255); font-weight: 300">You're eligible to retain a reviewing attorney directly through GotACase and start your case.</div></div>
+      </div>
+      <div class="outcome">
+        <div class="o-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"></path><path d="M4 7h16"></path><path d="m16 21 4-4-4-4"></path><path d="M20 17H4"></path></svg></div>
+        <div><div class="o-tier" style="font-size: 15px">MODERATE:
+(40–69)</div><div class="o-desc" style="font-size: 13px; color: rgb(255, 255, 255); font-weight: 300">You receive a Case Strength Report outlining what could strengthen your claim and your next steps.</div></div>
+      </div>
+      <div class="outcome">
+        <div class="o-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg></div>
+        <div><div class="o-tier" style="font-size: 15px">POOR: (0–39)</div><div class="o-desc" style="font-weight: 300; color: rgb(255, 255, 255)">Your case does not meet criteria — you receive clear guidance on the options available to you.</div></div>
+      </div>
+      <div class="next-foot">
+        <div class="rule"></div>
+        <p class="footnote">Every user gets a clear next step.</p>
+        <div class="rule"></div>
+      </div>
+    </section>
+
+    <!-- ============ 9. FOUR PILLARS ============ -->
+    <section class="pillars" id="pillars">
+      <h2 class="section-title">Built On Four Pillars</h2>
+      <p class="lede" style="font-weight: 400">The methodology behind every Case Score.</p>
+      <div class="pillar-grid">
+        <div class="pillar">
+          <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg></div>
+          <div class="p-body"><div class="p-title">Liability:</div><div class="p-desc">Did the other party act negligently?</div></div>
+        </div>
+        <div class="pillar">
+          <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></div>
+          <div class="p-body"><div class="p-title">Damages:</div><div class="p-desc">Did you suffer real losses or injuries?</div></div>
+        </div>
+        <div class="pillar">
+          <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></div>
+          <div class="p-body"><div class="p-title">Evidence:</div><div class="p-desc">Do you have supporting proof?</div></div>
+        </div>
+        <div class="pillar">
+          <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg></div>
+          <div class="p-body"><div class="p-title">Deadlines:</div><div class="p-desc">Is your claim still within the legal deadline?</div></div>
+        </div>
+      </div>
+      <p class="pillars-tag" style="margin: 25px 0px 22px; line-height: 1.7">See your attorney-reviewed Case Score</p>
+      <a href="quiz.html" class="pillars-cta" style="gap: 10px; padding: 22px; margin: 1px 0px 0px; line-height: 1.7; height: 54px">Get My Free Case Score <span class="arrow">→</span></a>
+    </section>
+
+    <!-- ============ 10. FOOTER ============ -->
+    <footer class="footer">
+      <div class="f-logo">
+        <img src="assets/images/logo-white.png" alt="GotACase" class="f-logo-img">
+      </div>
+      <div class="f-tag" style="color: #FFFFFF">Where every case begins.</div>
+      <div class="f-links" style="font-size: 11px">
+        <a href="#">About Us</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Disclosures</a>
+      </div>
+      <div class="f-legal">
+        <p class="f-entity">GotACase&trade; is powered by LexMatic, Inc. in partnership with The Maddox Law Firm.</p>
+        <p class="f-disclaimer">This is not legal advice. Attorney-client relationship begins upon signed agreement.</p>
+        <p class="f-advertising">Attorney Advertising.</p>
+      </div>
+      <p class="copy">© 2026 GotACase, Inc. All rights reserved.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    
+
+    /* ---------- Case type carousel data ---------- */
+    const carIcon = '<path d="M5 16v-3l1.6-4.2A2 2 0 0 1 8.5 7.5h7a2 2 0 0 1 1.9 1.3L19 13v3M5 16h14M5 16v2.2M19 16v2.2M7.5 13h9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="16" r="1.2"/><circle cx="16" cy="16" r="1.2"/>';
+    const briefcaseIcon = '<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M9 8V6.4A1.4 1.4 0 0 1 10.4 5h3.2A1.4 1.4 0 0 1 15 6.4V8M4 13h16" stroke-linecap="round" stroke-linejoin="round"/>';
+    const slipIcon = '<path d="M12 4l8.5 15H3.5L12 4z" stroke-linejoin="round"/><path d="M12 10v4M12 16.4v.4" stroke-linecap="round"/>';
+    const medicalIcon = '<rect x="4" y="4" width="16" height="16" rx="4.5"/><path d="M12 9v6M9 12h6" stroke-linecap="round"/>';
+
+    const caseTypes = [
+      { label: 'Auto Accidents',       icon: carIcon,       desc: 'If you were involved in a car, truck, or vehicle accident, submit your claim for a free attorney-reviewed Case Score.' },
+      { label: 'Workplace Injuries',   icon: briefcaseIcon, desc: 'If you suffered an injury on the job or at a work site, submit your claim for a free attorney-reviewed Case Score.' },
+      { label: 'Slip &amp; Fall',      icon: slipIcon,      desc: 'If you were hurt in a slip, trip, or fall on someone else\u2019s property, submit your claim for a free attorney-reviewed Case Score.' },
+      { label: 'Medical Malpractice',  icon: medicalIcon,   desc: 'If you were harmed by a medical error or negligent care, submit your claim for a free attorney-reviewed Case Score.' }
+    ];
+
+    const carousel = document.getElementById('case-carousel');
+    carousel.innerHTML = caseTypes.map((c, i) => `
+      <article class="ct2-card">
+        <div class="ct2-head">
+          <div class="ct2-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">${c.icon}</svg></div>
+          <h3 class="ct2-title">${c.label}</h3>
+        </div>
+        <p class="ct2-desc">${c.desc}</p>
+      </article>`).join('');
+
+    /* ---------- Pagination dots ---------- */
+    const dotsWrap = document.getElementById('ct-dots');
+    dotsWrap.innerHTML = caseTypes.map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}" data-i="${i}"></span>`).join('');
+    function cardStep() {
+      const first = carousel.querySelector('.ct2-card');
+      if (!first) return 1;
+      const gap = parseFloat(getComputedStyle(carousel).gap) || 16;
+      return first.offsetWidth + gap;
+    }
+    carousel.addEventListener('scroll', () => {
+      const i = Math.round(carousel.scrollLeft / cardStep());
+      dotsWrap.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+    }, { passive: true });
+    dotsWrap.addEventListener('click', (e) => {
+      const d = e.target.closest('.dot');
+      if (!d) return;
+      carousel.scrollTo({ left: cardStep() * (+d.dataset.i), behavior: 'smooth' });
+    });
+
+    /* ---------- Gauge builder ---------- */
+    const MIN = -118, MAX = 118; // degrees, 0 = top
+    function polar(cx, cy, r, deg) {
+      const a = (deg - 90) * Math.PI / 180;
+      return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    }
+    function arc(cx, cy, r, a0, a1) {
+      const p0 = polar(cx, cy, r, a0), p1 = polar(cx, cy, r, a1);
+      const large = (a1 - a0) > 180 ? 1 : 0;
+      return `M ${p0.x.toFixed(2)} ${p0.y.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${p1.x.toFixed(2)} ${p1.y.toFixed(2)}`;
+    }
+
+    function buildGauge(el) {
+      const score = +el.dataset.score;
+      const mini = el.hasAttribute('data-mini');
+      const range = el.hasAttribute('data-range');
+      const W = 200, H = 150, cx = 100, cy = 120, r = 78;
+      const sw = mini ? 13 : (range ? 17 : 17);
+      const valAngle = MIN + (score / 100) * (MAX - MIN);
+      const trackColor = el.dataset.track || (mini ? '#e6e9ef' : '#D4AF37');
+      const fillColor = el.dataset.fill || '#172D50';
+      const numClass = mini ? 'mg-num' : (range ? 'rg-num' : 'g-num');
+      const ofClass = range ? 'rg-of' : 'g-of';
+      const numY = mini ? cy - 8 : (range ? cy - 18 : cy - 24);
+      const ofY = range ? cy + 2 : cy - 2;
+      const arcShift = range ? -10.5 : (mini ? 0 : -6); // move arc up, leaving text put
+
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+      // remainder track (full span, sits underneath)
+      const track = document.createElementNS(svgNS, 'path');
+      track.setAttribute('d', arc(cx, cy, r, MIN, MAX));
+      track.setAttribute('stroke', trackColor);
+      track.setAttribute('stroke-width', sw);
+      track.setAttribute('stroke-linecap', 'round');
+      track.setAttribute('fill', 'none');
+      if (arcShift) track.setAttribute('transform', `translate(0 ${arcShift})`);
+      svg.appendChild(track);
+
+      // navy fill (animated)
+      const fill = document.createElementNS(svgNS, 'path');
+      fill.setAttribute('d', arc(cx, cy, r, MIN, valAngle));
+      fill.setAttribute('stroke', fillColor);
+      fill.setAttribute('stroke-width', sw);
+      fill.setAttribute('stroke-linecap', 'round');
+      fill.setAttribute('fill', 'none');
+      if (arcShift) fill.setAttribute('transform', `translate(0 ${arcShift})`);
+      svg.appendChild(fill);
+
+      // center number
+      const num = document.createElementNS(svgNS, 'text');
+      num.setAttribute('x', cx); num.setAttribute('y', numY);
+      num.setAttribute('text-anchor', 'middle'); num.setAttribute('class', numClass);
+      num.textContent = score;
+      svg.appendChild(num);
+
+      if (!mini) {
+        const of = document.createElementNS(svgNS, 'text');
+        of.setAttribute('x', cx); of.setAttribute('y', ofY);
+        of.setAttribute('text-anchor', 'middle'); of.setAttribute('class', ofClass);
+        of.textContent = 'OUT OF 100';
+        svg.appendChild(of);
+      }
+      el.appendChild(svg);
+
+      const len = fill.getTotalLength();
+      fill.style.strokeDasharray = len;
+      fill.style.strokeDashoffset = len;
+      fill.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.22,.9,.3,1)';
+
+      el._animate = () => {
+        if (el._done) return; el._done = true;
+        // reveal the navy arc (CSS transition handles the sweep)
+        requestAnimationFrame(() => { fill.style.strokeDashoffset = 0; });
+        fill.style.strokeDashoffset = 0;
+        // count the number up as an enhancement
+        const dur = 1300, t0 = performance.now();
+        num.textContent = '0';
+        function tick(t) {
+          const p = Math.min(1, (t - t0) / dur);
+          const eased = 1 - Math.pow(1 - p, 3);
+          num.textContent = Math.round(eased * score);
+          if (p < 1) requestAnimationFrame(tick);
+          else num.textContent = score;
+        }
+        requestAnimationFrame(tick);
+        // guarantee the final value even if rAF is throttled
+        setTimeout(() => { num.textContent = score; }, dur + 200);
+      };
+    }
+
+    /* ---------- Score range cards ---------- */
+    const ICO_X = '<svg viewBox="0 0 20 20" fill="none"><path d="M6.5 6.5l7 7M13.5 6.5l-7 7" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>';
+    const ICO_CHECK = '<svg viewBox="0 0 20 20" fill="none"><path d="M5 10.4l3.3 3.3L15.2 6.8" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const PILLARS = ['Liability', 'Damages', 'Evidence', 'Deadlines'];
+    const ranges = [
+      { head: '0–39: POOR',          color: '#D5392C', score: 39, fill: '#D5392C', states: [0,0,0,0],
+        desc: 'Your claim may be difficult to pursue based on the information provided.' },
+      { head: '40–69: MODERATE',     color: '#D4AF37', score: 69, fill: '#D4AF37', states: [1,0,0,0],
+        desc: 'There may be some challenges, but you could still have options.' },
+      { head: '70–89: GOOD',         color: '#4C9D69', score: 89, fill: '#4C9D69', states: [1,1,1,1],
+        desc: 'Your claim has factors that may support moving forward.' },
+      { head: '90–100: VERY GOOD',   color: '#172D50', score: 99, fill: '#172D50', states: [1,1,1,1],
+        desc: 'Your claim appears to have strong indicators based on current information.' }
+    ];
+    document.getElementById('range-cards').innerHTML = ranges.map(rng => `
+      <div class="rng-card">
+        <div class="rng-head" style="color:${rng.color}">${rng.head}</div>
+        <div class="rng-body">
+          <div class="rng-gauge" data-gauge data-range data-score="${rng.score}" data-fill="${rng.fill}" data-track="#E3E6EB"></div>
+          <div class="rng-checks">
+            ${PILLARS.map((p, i) => `<div class="row ${rng.states[i] ? 'good' : 'bad'}"><span class="ci">${rng.states[i] ? ICO_CHECK : ICO_X}</span>${p}</div>`).join('')}
+          </div>
+        </div>
+        <div class="rng-divider"></div>
+        <p class="rng-desc">${rng.desc}</p>
+      </div>`).join('');
+
+    /* ---------- Gauge animation ---------- */
+    const gauges = document.querySelectorAll('[data-gauge]');
+    gauges.forEach(buildGauge);
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting && e.target._animate) e.target._animate(); });
+    }, { threshold: 0.4 });
+    gauges.forEach(g => io.observe(g));
+  </script>
 </body>
 </html>

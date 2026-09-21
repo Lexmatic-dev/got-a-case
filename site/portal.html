@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Case Portal — GotACase</title>
+<meta name="description" content="Track the status of your GotACase submission, your Case ID and your attorney-reviewed Case Score.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+html { scroll-behavior: smooth; }
+    body { margin: 0; background: #E9EBEE; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+  
+  /* Choice cards in "Your path forward" */
+  .opt { background: #FFFFFF; border: 1.5px solid #E4E7EC; box-shadow: 0 2px 10px rgba(23,45,80,0.05); transition: background .15s, border-color .15s, box-shadow .15s; }
+  .opt.on { background: #FDF6DC; border-color: #172D50; box-shadow: 0 4px 16px rgba(23,45,80,0.13); }
+  .opt-sm, .opt-sm.on { box-shadow: none; }
+  .opt .opt-dot { background: #FFFFFF; border: 1.5px solid #C9CFD8; }
+  .opt.on .opt-dot { background: #172D50; border-color: #172D50; }
+  .opt.on .opt-dot::after { content: "\2713"; }
+  .menu summary { padding: 6px; margin: -6px; }
+</style>
+</head>
+<body>
+<div style="max-width:390px;margin:0 auto;background:#FFFFFF;min-height:100vh;overflow-x:hidden;color:#111111;box-shadow:0 0 40px rgba(23,45,80,0.12);position:relative;">
+
+  <!-- 1. Header -->
+  <div style="position: static; z-index: 50; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; background-color: #ffffff; border-bottom: 1px solid #F1EFE6; height: 30px">
+    
+    <img src="assets/images/logo.png" alt="GotACase" style="display:block; height:17px; width:auto; margin-left:9px;"><details class="menu"><summary aria-label="Open menu"><span></span><span></span><span></span></summary>
+        <nav class="menu-panel">
+          <a href="index.html">Home</a>
+          <a href="quiz.html">Check Your Case Score</a>
+          <a href="alabama.html">Alabama</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </details>
+  </div>
+
+  <!-- 2. Hero -->
+  <div style="padding: 28px 28px 36px; text-align: center; background-color: #ffffff; position: relative">
+    <div style="font-size: 16px; font-weight: 800; letter-spacing: 2.4px; color: #D4AF37; margin-bottom: 10px">YOUR CASE HAS BEEN RECEIVED</div>
+    <div style="font-size:14px;font-weight:700;color:#172D50;line-height:1.35;margin-bottom:14px;">Preliminary Case Category: <span id="caseCategory">—</span></div>
+    
+
+    <div style="position:relative;width:228px;height:138px;margin:0 auto;">
+      
+      <div style="position:absolute;top:52px;left:0;right:0;text-align:center;">
+        
+        <div style="font-size:46px;font-weight:800;color:#172D50;line-height:1;letter-spacing:-1px;">?</div><div style="font-size:11px;font-weight:700;letter-spacing:1.6px;color:#8C96A3;margin-top:7px;">OUT OF 100</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 8px"><div style="font-size:11.5px;font-weight:500;color:#172D50;margin-top:5px;line-height:1.35;white-space:nowrap;letter-spacing:-0.2px;">Attorney-Confirmed Case Score: Pending Attorney Review</div><div style="font-size:12.5px;color:#8C96A3;margin:7px auto 0;max-width:300px;line-height:1.45;">Your confirmed score will appear once an attorney reviews your case.</div></div>
+    <div style="font-size:13px;font-weight:400;color:#8C96A3;margin-top:18px;">Reviewed by <span style="color:#172D50;font-weight:600;">William C. Maddox, Esq.</span> · Alabama</div>
+    <button type="button" data-action="onSeeDetails" style="margin-top:14px;border:1px solid #DCE0E6;background:#FFFFFF;border-radius:999px;padding:9px 18px;font-size:13px;font-weight:600;color:#172D50;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 1px 3px rgba(23,45,80,0.06);">See details <span style="font-size:11px;">↓</span></button>
+  <svg width="228" height="130" viewBox="0 0 228 130" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block; width: 220px; position: absolute; left: 87px; top: 81px">
+        <path d="M 24 118 A 90 90 0 0 1 204 118" stroke="#EAE7DC" stroke-width="20" stroke-linecap="round"></path>
+        <path d="M 24 118 A 90 90 0 0 1 204 118" stroke="#172D50" stroke-width="20" stroke-linecap="round" stroke-dasharray="141.4 282.7"></path>
+      </svg></div>
+
+  <!-- 3. Case ID — cream band -->
+  <div style="padding: 24px; background: linear-gradient(0deg, #fdf6dc9b, #ffffff)">
+    <div style="background:#FFFFFF;border:1px solid #F0E9CF;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(23,45,80,0.05);">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.8px;color:#8C96A3;margin-bottom:10px;">CASE ID</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="caseId" style="font-size: 19px; font-weight: 600; color: #172D50; letter-spacing: 0.3px; white-space: nowrap">—</span>
+        <button type="button" data-action="onCopy" style="border:none;background:#FDF6DC;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#172D50;flex-shrink:0;">⧉</button>
+      </div>
+      <div style="font-size:12.5px;font-weight:400;color:#8C96A3;margin-top:10px;"><span id="copyHint">Save this number for your records.</span></div>
+    </div>
+  </div>
+
+  <!-- 4. Case Status Timeline -->
+  <div style="padding: 8px 24px 4px; background-color: #fdf6dc9c; padding-bottom: 8px; display: block">
+    <div style="background:#FFFFFF;border:1px solid #ECECEC;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(23,45,80,0.05);">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.8px;color:#8C96A3;margin-bottom:18px;">CASE STATUS</div>
+
+      <div style="display:flex;gap:14px;">
+        <div style="width:22px;height:22px;border-radius:50%;background:#D4AF37;display:flex;align-items:center;justify-content:center;color:#172D50;font-size:12px;font-weight:800;flex-shrink:0;">✓</div>
+        <div style="flex:1;padding-bottom:18px;border-left:2px solid #D4AF37;margin-left:-12px;padding-left:24px;margin-top:1px;"><span style="font-size:14.5px;font-weight:600;color:#111111;">Submitted</span></div>
+      </div>
+      <div style="display:flex;gap:14px;">
+        <div style="width:22px;height:22px;border-radius:50%;background:#D4AF37;display:flex;align-items:center;justify-content:center;color:#172D50;font-size:12px;font-weight:800;flex-shrink:0;">✓</div>
+        <div style="flex:1;padding-bottom:18px;border-left:2px solid #D4AF37;margin-left:-12px;padding-left:24px;margin-top:1px;"><span style="font-size:14.5px;font-weight:600;color:#111111;">Attorney Assigned</span></div>
+      </div>
+      <div style="display:flex;gap:14px;">
+        <div style="width:22px;height:22px;border-radius:50%;background:#172D50;border:3px solid #D4AF37;box-sizing:border-box;flex-shrink:0;"></div>
+        <div style="flex:1;padding-bottom:18px;border-left:2px solid #E3E0D4;margin-left:-12px;padding-left:24px;margin-top:1px;">
+          <span style="font-size:14.5px;font-weight:700;color:#172D50;">Under Review</span>
+          <span style="display:inline-block;margin-left:8px;font-size:10px;font-weight:700;letter-spacing:0.8px;color:#D4AF37;background:#FDF6DC;padding:3px 8px;border-radius:20px;vertical-align:middle;">CURRENT</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;">
+        <div style="width:22px;height:22px;border-radius:50%;background:#FFFFFF;border:2px solid #D7DBE0;box-sizing:border-box;flex-shrink:0;"></div>
+        <div style="flex:1;padding-left:12px;margin-top:1px;"><span style="font-size:14.5px;font-weight:500;color:#8C96A3;">Resolution</span></div>
+      </div>
+
+      <div style="margin-top:6px;padding-top:16px;border-top:1px solid #F1F1F1;font-size:13px;font-style:italic;font-weight:400;color:#5C6573;line-height:1.5;">Your case is currently under attorney review. You will be contacted within 2–3 business days.</div>
+    </div>
+  </div>
+
+  <!-- 7. Path Forward / Options (category-branched) -->
+  <!-- Version A: Good / Very Good -->
+  <div id="path-forward-a" style="display:none;background:linear-gradient(180deg, #fdf7de9c, #ffffff00);padding:28px 24px 22px;">
+    <div style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:#D4AF37;margin-bottom:10px;">YOUR PATH FORWARD</div>
+      <div style="font-size:22px;font-weight:700;color:#172D50;line-height:1.25;letter-spacing:-0.4px;">Move forward now, or wait for your confirmed score</div>
+      <div style="font-size:13px;font-weight:500;color:#5C6573;line-height:1.5;margin-top:9px;">Your case is looking strong. You can proceed now while an attorney finishes reviewing your case for a confirmed score — or wait until that review is complete. Your choice.</div>
+    </div>
+    <button type="button" class="opt" data-choice="proceed" style="width:100%;text-align:left;cursor:pointer;display:flex;gap:13px;align-items:flex-start;border-radius:14px;padding:16px;margin-bottom:12px;font-family:'Plus Jakarta Sans',sans-serif;">
+      <div class="opt-dot" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#FFFFFF;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:15px;font-weight:700;color:#172D50;line-height:1.3;">Proceed with a GotACase Attorney</div>
+        <div style="font-size:12.5px;font-weight:500;color:#7A828F;line-height:1.45;margin-top:4px;">Sign up now — subject to attorney approval and engagement.</div>
+      </div>
+    </button>
+    <button type="button" class="opt" data-choice="wait" style="width:100%;text-align:left;cursor:pointer;display:flex;gap:13px;align-items:flex-start;border-radius:14px;padding:16px;margin-bottom:16px;font-family:'Plus Jakarta Sans',sans-serif;">
+      <div class="opt-dot" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#FFFFFF;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:15px;font-weight:700;color:#172D50;line-height:1.3;">Wait for Attorney-Confirmed Score</div>
+        <div style="font-size:12.5px;font-weight:500;color:#7A828F;line-height:1.45;margin-top:4px;">Stay in review. No action needed yet — we'll notify you the moment your score is confirmed.</div>
+      </div>
+    </button>
+    <div id="proceed-panel" hidden>
+      <div style="background:#FFFFFF;border:1px solid #ECE9DC;border-radius:14px;padding:18px;margin-top:2px;box-shadow:0 3px 14px rgba(23,45,80,0.06);">
+        <div style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#D4AF37;margin-bottom:8px;">ONE MORE QUESTION</div>
+        <div style="font-size:15px;font-weight:700;color:#172D50;line-height:1.35;margin-bottom:14px;">Do you want to use a GotACase attorney, or do you already have your own?</div>
+        <button type="button" class="opt opt-sm" data-attorney="gotacase" style="width:100%;text-align:left;cursor:pointer;display:flex;gap:11px;align-items:center;border-radius:11px;padding:13px 14px;margin-bottom:10px;font-family:'Plus Jakarta Sans',sans-serif;">
+      <div class="opt-dot" style="width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#FFFFFF;"></div>
+          <span style="font-size:14px;font-weight:700;color:#172D50;">Use a GotACase attorney</span>
+        </button>
+        <button type="button" class="opt opt-sm" data-attorney="own" style="width:100%;text-align:left;cursor:pointer;display:flex;gap:11px;align-items:center;border-radius:11px;padding:13px 14px;font-family:'Plus Jakarta Sans',sans-serif;">
+      <div class="opt-dot" style="width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#FFFFFF;"></div>
+          <span style="font-size:14px;font-weight:700;color:#172D50;">I already have my own attorney</span>
+        </button>
+        <div id="gc-panel" hidden>
+          <div style="margin-top:14px;background:#F4F7FA;border-radius:11px;padding:15px;">
+            <div style="font-size:13.5px;font-weight:600;color:#172D50;line-height:1.5;">Great — we'll match you with a licensed GotACase attorney and get your engagement started, subject to their approval.</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:9px;margin-top:13px;background:#D4AF37;border-radius:10px;padding:14px;color:#172D50;font-size:14px;font-weight:700;letter-spacing:0.2px;cursor:pointer;"><span>Continue to Sign Up</span><span style="font-size:15px;line-height:1;">→</span></div>
+          </div>
+        </div>
+        <div id="own-panel" hidden>
+          <div style="margin-top:14px;background:#F4F7FA;border-radius:11px;padding:15px;">
+            <div style="font-size:13.5px;font-weight:600;color:#172D50;line-height:1.5;margin-bottom:9px;">No problem — you can keep your own attorney. GotACase will still do the heavy lifting on your case:</div>
+            <div style="display:flex;gap:9px;align-items:flex-start;margin-bottom:7px;"><span style="color:#D4AF37;font-weight:800;font-size:13px;line-height:1.5;">•</span><span style="font-size:13px;font-weight:500;color:#5C6573;line-height:1.5;">Organize your case and keep everything in one place</span></div>
+            <div style="display:flex;gap:9px;align-items:flex-start;margin-bottom:7px;"><span style="color:#D4AF37;font-weight:800;font-size:13px;line-height:1.5;">•</span><span style="font-size:13px;font-weight:500;color:#5C6573;line-height:1.5;">Collect and package the facts, documents, and evidence</span></div>
+            <div style="display:flex;gap:9px;align-items:flex-start;"><span style="color:#D4AF37;font-weight:800;font-size:13px;line-height:1.5;">•</span><span style="font-size:13px;font-weight:500;color:#5C6573;line-height:1.5;">Prepare a clear case summary ready to hand to your attorney</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:9px;margin-top:13px;background:#D4AF37;border-radius:10px;padding:14px;color:#172D50;font-size:14px;font-weight:700;letter-spacing:0.2px;cursor:pointer;"><span>Continue with My Attorney</span><span style="font-size:15px;line-height:1;">→</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="wait-panel" hidden>
+      <div style="display:flex;gap:13px;align-items:flex-start;background:#EAEEF3;border-radius:14px;padding:16px;margin-top:2px;">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#172D50" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;color:#172D50;">You're all set — no action needed</div>
+          <div style="font-size:12.5px;font-weight:500;color:#5C6573;line-height:1.5;margin-top:3px;">Your case stays under attorney review. We'll notify you the moment your score is confirmed, and your options to engage an attorney will appear here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Version B: Moderate / Poor / missing (locked) -->
+  <div id="path-forward-b" style="display:block;background:linear-gradient(180deg, #fdf7de9c, #ffffff00);padding:28px 24px 12px;">
+    <div style="background:#FFFFFF;border:1px solid #ECECEC;border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(23,45,80,0.05);position:relative;overflow:hidden;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.8px;color:#8C96A3;margin-bottom:18px;">YOUR OPTIONS GOING FORWARD</div>
+      <div style="filter:blur(6px);opacity:0.4;pointer-events:none;user-select:none;">
+        <div style="height:52px;border-radius:12px;background:#F1F3F6;margin-bottom:12px;"></div>
+        <div style="height:52px;border-radius:12px;background:#F1F3F6;margin-bottom:12px;"></div>
+        <div style="height:46px;border-radius:10px;background:#EAE7DC;"></div>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:52px;bottom:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;border-radius:12px;background:rgba(247,249,251,0.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);">
+        <div style="width:44px;height:44px;border-radius:50%;background:#172D50;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></div>
+        <div style="font-size:13.5px;font-weight:600;color:#172D50;line-height:1.5;max-width:270px;">Your next steps will appear once your attorney completes their review of your case.</div>
+      </div>
+    </div>
+  </div>
+  <!-- Score Breakdown (locked) — both versions -->
+  <div id="score-breakdown" style="padding:8px 24px 20px;padding-top:12px;">
+    <div style="background:#FFFFFF;border:1px solid #ECECEC;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(23,45,80,0.05);position:relative;overflow:hidden;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.8px;color:#8C96A3;margin-bottom:18px;">YOUR SCORE BREAKDOWN</div>
+      <div style="filter:blur(5px);opacity:0.5;pointer-events:none;user-select:none;">
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;"><span style="font-size:14px;font-weight:600;color:#111111;">Liability <span style="font-size:11.5px;font-weight:500;color:#8C96A3;">· 30% weight</span></span><span style="font-size:11px;font-weight:700;letter-spacing:0.6px;color:#172D50;">STRONG</span></div>
+          <div style="height:7px;background:#EFEDE3;border-radius:20px;overflow:hidden;"><div style="height:100%;width:92%;background:#172D50;border-radius:20px;"></div></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;"><span style="font-size:14px;font-weight:600;color:#111111;">Damages <span style="font-size:11.5px;font-weight:500;color:#8C96A3;">· 30% weight</span></span><span style="font-size:11px;font-weight:700;letter-spacing:0.6px;color:#8C96A3;">MODERATE</span></div>
+          <div style="height:7px;background:#EFEDE3;border-radius:20px;overflow:hidden;"><div style="height:100%;width:58%;background:#8C96A3;border-radius:20px;"></div></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;"><span style="font-size:14px;font-weight:600;color:#111111;">Evidence <span style="font-size:11.5px;font-weight:500;color:#8C96A3;">· 20% weight</span></span><span style="font-size:11px;font-weight:700;letter-spacing:0.6px;color:#172D50;">STRONG</span></div>
+          <div style="height:7px;background:#EFEDE3;border-radius:20px;overflow:hidden;"><div style="height:100%;width:88%;background:#172D50;border-radius:20px;"></div></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;"><span style="font-size:14px;font-weight:600;color:#111111;">Deadlines <span style="font-size:11.5px;font-weight:500;color:#8C96A3;">· 20% weight</span></span><span style="font-size:11px;font-weight:700;letter-spacing:0.6px;color:#172D50;">STRONG</span></div>
+          <div style="height:7px;background:#EFEDE3;border-radius:20px;overflow:hidden;"><div style="height:100%;width:90%;background:#172D50;border-radius:20px;"></div></div>
+        </div>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:52px;bottom:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;border-radius:12px;background:rgba(247,249,251,0.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);">
+        <div style="width:44px;height:44px;border-radius:50%;background:#172D50;display:flex;align-items:center;justify-content:center;margin-bottom:12px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></div>
+        <div style="font-size:13.5px;font-weight:600;color:#172D50;line-height:1.5;max-width:260px;">Your score breakdown will appear once the attorney finalizes their review — check back soon.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+      <div class="f-logo"><img src="assets/images/logo-white.png" alt="GotACase" class="f-logo-img"></div>
+      <div class="f-tag">Where every case begins.</div>
+      <div class="f-links">
+        <a href="#">About Us</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Disclosures</a>
+      </div>
+      <div class="f-legal">
+        <p class="f-entity">GotACase&trade; is powered by LexMatic, Inc. in partnership with The Maddox Law Firm.</p>
+        <p class="f-disclaimer">This is not legal advice. Attorney-client relationship begins upon signed agreement.</p>
+        <p class="f-advertising">Attorney Advertising.</p>
+      </div>
+      <p class="copy">&copy; 2026 GotACase, Inc. All rights reserved.</p>
+    </footer>
+
+  <!-- 8. Footer -->
+  
+
+</div>
+
+<script>
+  (function () {
+    // Case data written by the quiz (quiz.html) lives in localStorage.
+    var score = null, category = '', caseId = '';
+    try {
+      score = localStorage.getItem('gac_score');
+      category = localStorage.getItem('gac_category') || '';
+      caseId = localStorage.getItem('gac_id') || '';
+    } catch (e) {}
+
+    document.getElementById('caseCategory').textContent = category || '\u2014';
+    document.getElementById('caseId').textContent = caseId || '\u2014';
+
+    // Version A (Good / Very Good) offers a path forward now; everything else is locked.
+    var strong = category === 'Good' || category === 'Very Good';
+    document.getElementById('path-forward-a').style.display = strong ? 'block' : 'none';
+    document.getElementById('path-forward-b').style.display = strong ? 'none' : 'block';
+
+    var state = { choice: null, attorney: null };
+    function show(id, on) { document.getElementById(id).hidden = !on; }
+    function render() {
+      document.querySelectorAll('[data-choice]').forEach(function (b) { b.classList.toggle('on', b.dataset.choice === state.choice); });
+      document.querySelectorAll('[data-attorney]').forEach(function (b) { b.classList.toggle('on', b.dataset.attorney === state.attorney); });
+      show('proceed-panel', state.choice === 'proceed');
+      show('wait-panel', state.choice === 'wait');
+      show('gc-panel', state.attorney === 'gotacase');
+      show('own-panel', state.attorney === 'own');
+    }
+    document.addEventListener('click', function (e) {
+      var c = e.target.closest('[data-choice]');
+      if (c) { state.choice = c.dataset.choice; state.attorney = null; render(); return; }
+      var a = e.target.closest('[data-attorney]');
+      if (a) { state.attorney = a.dataset.attorney; render(); return; }
+      var act = e.target.closest('[data-action]');
+      if (!act) return;
+      if (act.dataset.action === 'onSeeDetails') {
+        var el = document.getElementById(strong ? 'path-forward-a' : 'path-forward-b');
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 12, behavior: 'smooth' });
+      }
+      if (act.dataset.action === 'onCopy') {
+        var id = caseId || '\u2014';
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(id).catch(function () {});
+        var hint = document.getElementById('copyHint');
+        hint.textContent = 'Copied to clipboard \u2713';
+        clearTimeout(hint._t);
+        hint._t = setTimeout(function () { hint.textContent = 'Save this number for your records.'; }, 2200);
+      }
+    });
+    render();
+  })();
+</script>
+</body>
+</html>

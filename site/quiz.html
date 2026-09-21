@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GotACase — Case Score Quiz</title>
+<meta name="description" content="Answer a few quick questions and get your free, attorney-reviewed Case Score in under 3 minutes.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+:root{
+    --navy:#172D50;
+    --gold:#D4AF37;
+    --grey:#8C96A3;
+    --tint:#FDF6DC;
+    --track:#E8E8E8;
+    --white:#FFFFFF;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    background:#eef0f2;
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Phone frame ---------- */
+  .phone{
+    position:relative;
+    width:390px;
+    max-width:100vw;
+    height:844px;
+    max-height:100vh;max-height:100dvh;
+    background:var(--white);
+    overflow:hidden;
+    box-shadow:0 30px 80px rgba(23,45,80,.18);
+  }
+  @media (max-width:430px){
+    .phone{height:100vh;height:100dvh;box-shadow:none;}
+  }
+
+  /* ---------- Persistent header (logo + timer + progress) ---------- */
+  .chrome{
+    position:absolute;top:0;left:0;right:0;z-index:30;
+    background:var(--white);
+    padding:16px 20px 13px;
+    display:none;flex-direction:column;gap:11px;
+    border-bottom:1px solid rgba(23,45,80,.04);
+  }
+  .chrome.show{display:flex;}
+  .chrome-top{position:relative;display:flex;align-items:center;justify-content:space-between;height:44px;}
+  .chrome-logo{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    height:20px;width:auto;max-width:62%;object-fit:contain;object-position:center;
+  }
+  .chrome-spacer{flex:none;width:40px;height:40px;}
+  .chrome-progress{display:flex;flex-direction:column;gap:7px;width:90%;margin:0 auto;}
+  .prog-label{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.01em;}
+  .progress{
+    position:relative;height:10px;border-radius:999px;
+    background:var(--track);overflow:hidden;width:100%;
+  }
+  .progress .bar{
+    height:100%;width:0;background:var(--gold);border-radius:999px;
+    transition:width .45s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ---------- Back arrow ---------- */
+  .back{
+    width:40px;height:40px;flex:none;border:none;background:transparent;
+    color:var(--navy);cursor:pointer;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;visibility:hidden;
+    transition:background .2s;
+  }
+  .back svg{width:24px;height:24px;}
+  .back:active{background:rgba(23,45,80,.07);}
+  .back.show{visibility:visible;}
+
+  /* ---------- Screens ---------- */
+  .screens{position:absolute;inset:0;}
+  .screen{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;
+    padding:124px 26px clamp(16px,3.6dvh,30px);
+    transform:translateX(100%);opacity:0;
+    transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .42s ease;
+    overflow-y:auto;
+  }
+  .screen::-webkit-scrollbar{display:none;}
+  .screen{scrollbar-width:none;}
+  .screen.active{transform:translateX(0);opacity:1;z-index:10;}
+  .screen.left{transform:translateX(-22%);opacity:0;}
+  .screen.right{transform:translateX(100%);opacity:0;}
+  .screen.notrans{transition:none !important;}
+
+  /* ---------- Typography ---------- */
+  .step-label{display:none;}
+  h1{font-size:30px;font-weight:800;line-height:1.15;letter-spacing:-.02em;text-wrap:balance;}
+  .question{
+    font-size:clamp(21px,3dvh,25px);font-weight:700;line-height:1.25;letter-spacing:-.015em;
+    text-align:center;text-wrap:balance;margin:0 0 clamp(14px,3.3dvh,28px);
+  }
+  .question.top{margin:0 0 clamp(9px,1.9dvh,16px);}
+  .qbody{margin:0;display:flex;flex-direction:column;}
+  .qbody .question{margin:0 0 16px;}
+  .sub{font-size:16px;font-weight:400;color:var(--navy);line-height:1.5;opacity:.85;}
+
+  /* ---------- Buttons / CTA ---------- */
+  .cta{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;background:var(--gold);color:#1a1408;
+    font-family:inherit;font-size:17px;font-weight:800;letter-spacing:.01em;
+    border:none;border-radius:999px;padding:clamp(12px,2.1dvh,18px) 24px;cursor:pointer;
+    box-shadow:0 8px 22px rgba(212,175,55,.32);
+    transition:transform .15s ease,box-shadow .2s ease,filter .2s;
+  }
+  .cta:active{transform:translateY(1px) scale(.992);filter:brightness(.97);}
+  .link-navy{
+    background:none;border:none;font-family:inherit;cursor:pointer;
+    color:var(--navy);font-weight:600;font-size:15px;padding:14px;
+    text-align:center;width:100%;
+  }
+  .link-navy:active{opacity:.6;}
+
+  /* ---------- Cards (choices) ---------- */
+  .card{
+    display:flex;align-items:center;gap:14px;
+    width:100%;background:var(--white);
+    border:2px solid rgba(23,45,80,.16);border-radius:var(--radius);
+    padding:20px 22px;cursor:pointer;font-family:inherit;
+    color:var(--navy);font-size:18px;font-weight:600;text-align:left;
+    transition:border-color .18s,background .18s,transform .12s;
+  }
+  .card:active{transform:scale(.985);}
+  .card.selected{border-color:var(--gold);background:var(--tint);}
+  .card-disabled{
+    border-color:rgba(140,150,163,.28);color:var(--grey);
+    cursor:not-allowed;background:#fbfbfc;
+  }
+  .card-disabled:active{transform:none;}
+  .coming{
+    margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--grey);
+    background:rgba(140,150,163,.12);padding:4px 9px;border-radius:999px;white-space:nowrap;
+  }
+
+  .stack{display:flex;flex-direction:column;gap:clamp(8px,1.5dvh,13px);}
+  .stack.center{margin:auto 0;}
+
+  /* Yes / No */
+  .yesno{display:flex;flex-direction:column;gap:clamp(8px,1.65dvh,14px);}
+  .yesno .card{justify-content:center;font-size:20px;font-weight:700;padding:24px;position:relative;}
+  .yesno .card .pick{position:absolute;right:18px;top:50%;transform:translateY(-50%);margin-left:0;}
+  .q-illus{display:block;width:62%;max-width:224px;margin:clamp(8px,2.4dvh,22px) auto 0;height:auto;opacity:.9;}
+
+  /* ---------- Question chrome (icon badge, rule, note, card icons) ---------- */
+  .q-icon{
+    width:clamp(44px,7.4dvh,62px);height:clamp(44px,7.4dvh,62px);flex:none;aspect-ratio:1/1;border-radius:50%;margin:clamp(18px,3.3dvh,28px) auto clamp(10px,2.4dvh,20px);
+    background:#fff;display:flex;align-items:center;justify-content:center;color:var(--gold);
+    box-shadow:0 0 0 9px rgba(212,175,55,.06),0 8px 22px rgba(212,175,55,.16);
+  }
+  .q-icon svg{width:30px;height:30px;}
+  [data-id="casetype"] .q-icon svg{transform:scale(1.55);}
+  .q-rule{display:none;}
+
+  /* Question screens share the "State" screen alignment */
+  [data-id="state"],
+  .qalign{padding-top:clamp(126px,17dvh,143px);}
+  [data-id="casetype"]{padding-top:clamp(126px,17dvh,143px);}
+  [data-id="state"] .question.top,
+  .qalign .question,
+  .qalign .qbody .question{margin:0 auto 46px;max-width:300px;text-wrap:balance;}
+  .qalign .qbody .question{max-width:340px;min-height:3.75em;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto clamp(14px,3.4dvh,40px);}
+  .lead{flex:none;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--gold);}
+  .lead svg{width:100%;height:100%;}
+  .card-disabled .lead{color:var(--grey);}
+  .pick{display:none;}
+  .card.selected .pick{margin-left:auto;display:flex;align-items:center;justify-content:center;flex:none;width:26px;height:26px;border-radius:50%;background:var(--gold);color:#fff;}
+  .pick svg{width:15px;height:15px;}
+  .q-note{
+    margin-top:auto;display:flex;align-items:flex-start;gap:clamp(8px,1.4dvh,12px);
+    background:var(--tint);border:1px solid rgba(212,175,55,.4);border-radius:14px;padding:clamp(10px,1.95dvh,16.5px) 17px;
+  }
+  .q-note .note-tx{font-size:clamp(12px,1.6dvh,13.5px);line-height:1.4;color:var(--navy);font-weight:500;}
+
+  /* ---------- Intro screen (arched hero) ---------- */
+  .intro{padding:0;text-align:center;overflow-y:auto;}
+  .hero{
+    background:var(--navy);
+    border-radius:0 0 50% 50% / 0 0 42% 42%;
+    padding:14px 12px 58px;
+    display:flex;flex-direction:column;align-items:center;
+    flex:none;
+  }
+  .hero-bar{
+    width:100%;display:flex;align-items:center;justify-content:space-between;
+    padding:10px 2px 0;
+  }
+  .hero-icon{
+    width:44px;height:44px;border:none;background:transparent;color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;border-radius:50%;
+  }
+  .hero-icon:active{background:rgba(255,255,255,.12);}
+  .hero-icon svg{width:27px;height:27px;}
+  .hero-logo{width:100%;max-width:400px;height:clamp(92px,20.4dvh,172px);margin:24px auto 12px;display:flex;align-items:center;justify-content:center;}
+  .hero-logo img{width:74%;height:100%;object-fit:contain;display:block;}
+  /* Guard: keep imagery fully visible regardless of editor opacity overrides */
+  #screens .active img.q-illus{opacity:.9 !important;}
+  .intro-body{
+    flex:1;display:flex;flex-direction:column;align-items:center;
+    padding:clamp(18px,6.9dvh,58px) 30px clamp(14px,3.6dvh,30px);
+  }
+  .intro-body h1{font-size:34px;margin-bottom:clamp(8px,2.1dvh,18px);}
+  .intro-body .sub{font-size:17px;line-height:1.55;max-width:330px;margin:0 auto 32px;opacity:.92;}
+  .trust{display:flex;flex-direction:column;gap:clamp(8px,2.1dvh,18px);align-items:flex-start;margin:4px auto clamp(10px,3.08dvh,26px);}
+  .trust li{display:flex;align-items:center;gap:14px;list-style:none;white-space:nowrap;
+    font-size:18px;font-weight:600;color:var(--navy);}
+  .check{
+    flex:none;width:clamp(27px,4dvh,34px);height:clamp(27px,4dvh,34px);border-radius:50%;
+    background:var(--gold);display:flex;align-items:center;justify-content:center;
+  }
+  .check svg{width:18px;height:18px;color:#fff;}
+  .intro-body .cta{margin-top:auto;}
+
+  /* ---------- Case-type grid ---------- */
+  .type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;grid-auto-rows:minmax(clamp(52px,10dvh,72px),1fr);flex:1 1 auto;min-height:0;margin-top:16px;}
+  .type-card{
+    position:relative;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    min-height:72px;border-radius:16px;border:1.5px solid rgba(23,45,80,.14);
+    background:var(--white);cursor:pointer;font-family:inherit;padding:8px 8px;
+    transition:border-color .18s,background .18s,transform .12s;
+  }
+  .type-card:active{transform:scale(.97);}
+  .type-card .tico{width:30px;height:30px;color:var(--navy);display:flex;align-items:center;justify-content:center;}
+  .type-card .tico svg{width:100%;height:100%;}
+  .type-card .lbl{font-size:12px;font-weight:700;color:var(--navy);text-align:center;line-height:1.2;display:flex;align-items:center;justify-content:center;}
+  .type-card .mini{font-size:9.3px;font-weight:700;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--grey);}
+  .type-card.selected{border-color:var(--gold);border-width:2px;background:#fff;}
+  .type-card.selected .tico{color:var(--gold);}
+  .type-card .tbadge{display:none;}
+  .type-card.selected .tbadge{display:flex;position:absolute;top:8px;right:8px;
+    width:24px;height:24px;border-radius:50%;background:var(--gold);color:#fff;align-items:center;justify-content:center;}
+  .type-card.selected .tbadge svg{width:14px;height:14px;}
+  .type-card.dis{border-color:rgba(140,150,163,.2);background:#fbfbfc;cursor:not-allowed;}
+  .type-card.dis .tico{color:var(--grey);opacity:.75;}
+  .type-card.dis .lbl{color:var(--grey);}
+
+  /* ---------- Soft stop ---------- */
+  .softstop{justify-content:center;text-align:center;}
+  .warn-icon{
+    width:74px;height:74px;border-radius:50%;margin:0 auto 24px;
+    background:rgba(212,175,55,.14);display:flex;align-items:center;justify-content:center;
+    font-size:36px;
+  }
+  .softstop h1{font-size:27px;margin-bottom:16px;}
+  .softstop .sub{max-width:320px;margin:0 auto 30px;}
+
+  /* ---------- Contact form ---------- */
+  .form-head{margin-bottom:clamp(12px,2.8dvh,24px);}
+  .form-head h1{font-size:clamp(21px,3.08dvh,26px);}
+  .field{margin-bottom:clamp(6px,1.9dvh,16px);display:flex;flex-direction:column;gap:clamp(3px,0.7dvh,6px);}
+  .field label{font-size:13px;font-weight:700;color:var(--navy);letter-spacing:.01em;}
+  .field label .req{color:var(--gold);}
+  .field input{
+    font-family:inherit;font-size:clamp(14px,1.9dvh,16px);font-weight:500;color:var(--navy);
+    background:var(--white);border:2px solid rgba(23,45,80,.18);border-radius:12px;
+    padding:clamp(10px,1.78dvh,15px) 16px;width:100%;transition:border-color .18s;
+  }
+  .field input::placeholder{color:var(--grey);font-weight:400;}
+  .field input:focus{outline:none;border-color:var(--gold);}
+  .field .hint{font-size:12px;color:var(--grey);font-weight:500;}
+  .disclaimer{font-size:clamp(10.5px,1.5dvh,11.5px);line-height:1.45;color:var(--grey);font-weight:500;margin-top:clamp(8px,1.7dvh,14px);text-align:center;}
+
+  /* ---------- Score screen ---------- */
+  .score{justify-content:flex-start;text-align:center;padding-top:clamp(76px,11.1dvh,94px);}
+  .logo-sm{display:none;}
+  .score h1{font-size:26px;margin-bottom:18px;}
+  .check-anim{
+    width:62px;height:62px;border-radius:50%;margin:16px auto 20px;
+    background:var(--gold);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 9px rgba(212,175,55,.06),0 8px 22px rgba(212,175,55,.16);
+  }
+  .check-anim svg{width:30px;height:30px;color:#fff;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,.45);}50%{box-shadow:0 0 0 16px rgba(212,175,55,0);}}
+  .score .sub{max-width:300px;margin:0 auto 26px;font-size:15px;}
+  .cat-kicker{display:block;font-size:11px;font-weight:700;color:var(--grey);letter-spacing:.12em;text-transform:uppercase;}
+  .score h1#catHeadline{font-size:32px;}
+  .score .copy-block{margin:0 auto 22px;}
+  #scoreOptions{width:100%;}
+  #scoreOptions .sub{margin:0 auto 22px;max-width:320px;}
+  .gauge-wrap{position:relative;width:230px;margin:0 auto;}
+  .gauge-label{
+    text-align:center;margin:15% 0 0;
+    font-size:19px;font-weight:800;letter-spacing:.02em;color:var(--navy);
+  }
+  .gauge-label small{display:block;font-size:11px;font-weight:600;color:var(--grey);
+    letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+  .result-card{width:100%;background:var(--tint);border-radius:20px;padding:clamp(13px,2.6dvh,22px) 20px clamp(12px,2.4dvh,20px);display:flex;flex-direction:column;align-items:center;margin:0 0 clamp(12px,3dvh,26px);}
+  .rc-label{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);text-align:center;}
+  .rc-cat{font-size:clamp(25px,4dvh,34px);font-weight:800;letter-spacing:-.02em;color:var(--navy);text-align:center;margin:clamp(6px,1.6dvh,14px) 0 2px;line-height:1.1;}
+  .rc-desc{font-size:clamp(12.5px,1.7dvh,14px);line-height:1.45;color:var(--navy);opacity:.85;max-width:300px;margin:6px auto 0;text-align:center;}
+  .rc-hr{width:100%;height:1px;background:rgba(212,175,55,.45);margin:clamp(8px,2.1dvh,18px) 0;}
+  .rc-hr.mid{background:rgba(140,150,163,.3);margin:clamp(14px,3.8dvh,32px) 0;}
+  .rc-pending{display:inline-flex;align-items:center;gap:8px;background:rgba(140,150,163,.16);color:var(--navy);font-size:14px;font-weight:700;border-radius:999px;padding:clamp(7px,1.3dvh,11px) 20px;margin:2px 0 0;}
+  .rc-dot{width:8px;height:8px;border-radius:50%;background:var(--grey);flex:none;}
+  .rc-assessed{font-size:10px;color:var(--grey);margin:clamp(6px,1.4dvh,12px) 0 0;text-align:center;line-height:1.45;}
+  .rc-assessed strong{color:var(--navy);font-weight:700;}
+  .rc-disclaimer{font-size:clamp(11px,1.5dvh,12.5px);line-height:1.5;color:var(--grey);max-width:330px;margin:clamp(12px,2.8dvh,24px) auto 0;text-align:center;}
+  .gac-sec{width:100%;text-align:center;}
+  .gac-id{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:.06em;margin:clamp(4px,1.2dvh,10px) 0 clamp(8px,1.9dvh,16px);}
+  .rc-idcopy{font-size:clamp(11px,1.5dvh,12.5px);line-height:1.5;color:var(--grey);max-width:330px;margin:0 auto clamp(12px,2.8dvh,24px);text-align:center;}
+  .rc-wait{display:block;width:100%;background:none;border:none;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--navy);text-decoration:underline;text-underline-offset:3px;padding:14px 8px;margin:6px 0 0;cursor:pointer;}
+  .pills{display:flex;justify-content:center;gap:5px;flex-wrap:nowrap;margin:16px 0 22px;}
+  .pill{display:inline-flex;align-items:center;gap:4px;background:var(--navy);color:var(--white);font-size:10.5px;font-weight:600;
+    padding:6px 9px;border-radius:999px;letter-spacing:0;white-space:nowrap;}
+  .pill .pill-ic{display:inline-flex;width:11px;height:11px;flex:none;}
+  .pill .pill-ic svg{width:100%;height:100%;}
+  .pill.pass .pill-ic{color:var(--gold);}
+  .pill.fail{background:#EDEFF1;color:var(--grey);}
+  .pill.fail .pill-ic{color:var(--grey);}
+  .opt-btn{display:flex;align-items:center;justify-content:center;text-align:center;width:100%;
+    font-family:inherit;font-size:16px;font-weight:700;line-height:1.3;border-radius:999px;
+    padding:clamp(12px,2dvh,17px) 20px;cursor:pointer;
+    transition:transform .15s ease,box-shadow .2s ease,filter .2s,background .2s,border-color .2s;}
+  .opt-btn:active{transform:translateY(1px) scale(.992);}
+  .opt-btn.primary{background:var(--gold);color:#1a1408;border:2px solid var(--gold);box-shadow:0 8px 22px rgba(212,175,55,.32);}
+  .opt-btn.primary:active{filter:brightness(.97);}
+  .opt-btn.secondary{background:var(--white);color:var(--navy);border:2px solid rgba(23,45,80,.5);}
+  .opt-btn.secondary:active{background:var(--tint);border-color:var(--gold);}
+  .id-box{width:100%;background:var(--tint);border:1.5px solid rgba(212,175,55,.55);
+    border-radius:14px;padding:15px 18px;margin:2px auto 16px;text-align:left;
+    display:flex;flex-direction:column;gap:11px;}
+  .id-row{display:flex;flex-direction:column;gap:3px;}
+  .id-row .id-lbl{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--grey);}
+  .id-row .id-val{font-size:15px;font-weight:800;color:var(--navy);letter-spacing:.02em;}
+  .id-row .id-val.mono{letter-spacing:.13em;}
+  .id-row .id-val.pending{color:var(--gold);}
+  .id-copy{font-size:12.5px;line-height:1.5;color:var(--grey);margin:0 auto 18px;max-width:330px;text-align:center;}
+  .id-box-sm{margin:4px auto 22px;}
+  .score .disclaimer{margin:0 auto 18px;max-width:320px;}
+  .score .cta{margin-top:auto;}
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:absolute;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);
+    background:var(--navy);color:var(--white);font-size:13.5px;font-weight:600;
+    padding:13px 20px;border-radius:999px;z-index:50;opacity:0;pointer-events:none;
+    transition:opacity .25s,transform .25s;white-space:nowrap;box-shadow:0 10px 30px rgba(23,45,80,.35);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+
+  @media (max-height:700px){
+    .form-head{margin-bottom:8px;}
+    .form-head h1{font-size:20px;}
+    .field{margin-bottom:5px;gap:2px;}
+    .field label{font-size:12px;}
+    .field input{padding:7px 14px;font-size:14px;}
+    .disclaimer{margin-top:7px;font-size:10.5px;}
+    .result-card{padding:11px 18px 11px;}
+    .rc-cat{font-size:23px;margin:3px 0 2px;}
+    .rc-desc{font-size:12px;margin:4px auto 0;}
+    .rc-hr{margin:8px 0;}
+    .rc-pending{padding:7px 16px;}
+    .rc-assessed{margin:5px 0 0;}
+    .rc-disclaimer{font-size:10.5px;margin-top:10px;}
+    .rc-hr.mid{margin:12px 0;}
+    .gac-id{margin:3px 0 6px;}
+    .rc-idcopy{font-size:10.5px;}
+    .q-icon{width:44px;height:44px;margin:13px auto 8px;}
+    .qalign .qbody .question{min-height:2.5em;}
+    .stack{gap:9px;}
+    .yesno{gap:9px;}
+  }
+
+  /* ---------- Layout refinements ---------- */
+
+#screens >.active img.q-illus { object-fit: contain !important }
+#screens >.active img.q-illus { width: 222px !important }
+#screens >.active img.q-illus { height: auto !important }
+#screens >.active img.q-illus { margin: 22px auto 0 !important }
+#screens >.active .question { font-weight: 600 !important }
+#screens :is(button,input,textarea) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) [d="M4 14l1.8-4.6A2 2 0 0 1 7.7 8h8.6a2 2 0 0 1 1.9 1.4L20 14v3H4z"] { stroke-width: 1px !important }
+#screens :is(button,input,textarea) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) [d="M3 7.5h11v9H3z"] { stroke-width: 1.5px !important }
+#screens :is(button,input,textarea) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) [d="M14 11h3.6l2.9 3v2.5H14z"] { stroke-width: 1.5px !important }
+#screens :is(button,input,textarea) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) [cx="17.5"] { stroke-width: 1px !important }
+#screens :is(button,input,textarea) >[data-icon="truck"] [cx="7"] { stroke-width: 1.5px !important }
+#screens :is(button,input,textarea) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) [cx="6"] { stroke-width: 1.5px !important }
+#screens :is(button,input,textarea) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) [cx="18"] { stroke-width: 1.5px !important }
+#screens :is(button,input,textarea) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) [d="M6 16l3.6-4.6h4.2l2 4.6"] { stroke-width: 1.5px !important }
+</style>
+</head>
+<body>
+<div class="phone">
+    <div class="chrome" id="chrome">
+      <div class="chrome-top" style="height: 47px">
+        <button class="back" id="back" aria-label="Go back" data-back="">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+        </button>
+        <img class="chrome-logo" src="assets/images/logo-tagline.png" alt="GotACase — Where Every Case Begins">
+        <details class="menu"><summary aria-label="Open menu"><span></span><span></span><span></span></summary>
+        <nav class="menu-panel">
+          <a href="index.html">Home</a>
+          <a href="quiz.html">Check Your Case Score</a>
+          <a href="alabama.html">Alabama</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </details>
+      </div>
+      <div class="chrome-progress">
+        <div class="prog-label" id="progLabel" style="font-size: 14px; font-weight: 900">10% Completed</div>
+        <div class="progress"><div class="bar" id="bar"></div></div>
+      </div>
+    </div>
+
+    <div class="screens" id="screens">
+
+      <!-- SCREEN 0 — INTRO -->
+      <section class="screen intro" data-id="intro" data-screen-label="Intro">
+        <div class="hero" style="font-size: 130px; padding: clamp(8px,1.7dvh,14px) 24px clamp(18px,5dvh,42px); border-radius: 0px 0px 100px 100px; width: 390px">
+          <div class="hero-bar">
+            <div aria-hidden="true" style="width:44px;height:44px;flex:none;"></div>
+            <details style="position:relative; flex:none;"><summary class="hero-icon" aria-label="Menu" style="list-style:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path></svg></summary><div style="position:absolute;top:calc(100% + 8px);right:0;z-index:80;min-width:210px;background:#FFFFFF;border:1px solid #ECECEC;border-radius:14px;box-shadow:0 12px 32px rgba(23,45,80,0.16);padding:8px;"><a href="index.html" style="display:block;padding:11px 13px;border-radius:9px;text-decoration:none;color:#172D50;font-size:14px;font-weight:600;">Home</a><a href="quiz.html" style="display:block;padding:11px 13px;border-radius:9px;text-decoration:none;color:#172D50;font-size:14px;font-weight:600;">Check Your Case Score</a><a href="alabama.html" style="display:block;padding:11px 13px;border-radius:9px;text-decoration:none;color:#172D50;font-size:14px;font-weight:600;">Alabama</a><a href="contact.html" style="display:block;padding:11px 13px;border-radius:9px;text-decoration:none;color:#172D50;font-size:14px;font-weight:600;">Contact</a></div></details>
+          </div>
+          <div class="hero-logo" style="opacity: 1; margin: clamp(12px,4.03dvh,34px) auto clamp(6px,1.2dvh,12px)">
+            <img alt="GotACase — Where Every Case Begins" src="assets/images/logo-tagline-white.png">
+          </div>
+        </div>
+        <div class="intro-body">
+          <h1 style="font-size: clamp(23px,4.3dvh,30px)">Let's Score Your Case</h1>
+          <p class="sub" style="font-size: clamp(14px,2dvh,16px)">Answer a few quick questions. A licensed attorney reviews your claim. Get your Case Score instantly.</p>
+          <ul class="trust" style="text-align: center; justify-content: center; align-items: stretch">
+            <li><span class="check" data-tick=""></span> Under 3 Minutes</li>
+            <li><span class="check" data-tick=""></span> No Upfront Cost</li>
+            <li><span class="check" data-tick=""></span> No Lawyer's Office Required</li>
+          </ul>
+          <button class="cta" data-go="state" style="padding: clamp(14px,3.5dvh,25px) 24px; margin: clamp(10px,2.4dvh,20px) 0px 2px; height: 4px; text-align: center; letter-spacing: 1px; color: #172D50">Start Now for Free</button>
+        </div>
+      </section>
+
+      <!-- SCREEN 1 — STATE -->
+      <section class="screen" data-id="state" data-screen-label="State">
+        <div class="step-label">Step 1 of 14</div>
+        <div class="q-icon" data-icon="pin" style="margin: 17px 138px 20px"></div>
+        <p class="question top" style="font-weight: 600">What state did this happen in?</p>
+        <div class="q-rule"></div>
+        <div class="stack">
+          <button class="card" data-select="" data-advance="casetype" style="font-weight: 400">Alabama<span class="pick" data-icon="check"></span></button>
+          <button class="card card-disabled" data-coming="">Florida<span class="coming">Coming Soon</span></button>
+          <button class="card card-disabled" data-coming="">Georgia<span class="coming">Coming Soon</span></button>
+          <button class="card card-disabled" data-coming="">Texas<span class="coming">Coming Soon</span></button>
+        </div>
+      </section>
+
+      <!-- SCREEN 2 — CASE TYPE -->
+      <section class="screen" data-id="casetype" data-screen-label="Case Type">
+        <div class="step-label">Step 2 of 14</div>
+        <div class="q-icon" data-icon="question"></div>
+        <p class="question top" style="font-weight: 600">What type of incident happened to you?</p>
+        <div class="q-rule"></div>
+        <div class="type-grid">
+          <button class="type-card" data-select="" data-advance="q4"><span class="tbadge" data-icon="check"></span><span class="tico" data-icon="car"></span><span class="lbl" style="font-weight: 500">Auto / Car Accident</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="truck"></span><span class="lbl">Commercial Vehicle</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="motorcycle"></span><span class="lbl">Motorcycle</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="hospital"></span><span class="lbl">Medical Malpractice</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="building"></span><span class="lbl">Slip &amp; Fall</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="gear"></span><span class="lbl">Workplace Injury</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="box"></span><span class="lbl">Defective Product</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="heart"></span><span class="lbl">Wrongful Death</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="paw"></span><span class="lbl">Dog Bite</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="house"></span><span class="lbl">Nursing Home Abuse</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="triangle"></span><span class="lbl">Sexual Assault</span><span class="mini">Soon</span></button>
+          <button class="type-card dis" data-coming=""><span class="tico" data-icon="question"></span><span class="lbl">Other / Not Sure</span><span class="mini">Soon</span></button>
+        </div>
+      </section>
+
+      <!-- SCREEN 3 — INCIDENT DATE -->
+      <section class="screen qalign" data-id="date" data-screen-label="Incident Date">
+        <div class="step-label">Step 3 of 14</div>
+        <div class="q-icon" data-icon="calendar"></div>
+        <p class="question top">When did this happen?</p>
+        <div class="q-rule"></div>
+        <div class="stack">
+          <button class="card" data-select="" data-advance="q4"><span class="lead" data-icon="clock"></span>Within the last 6 months<span class="pick" data-icon="check"></span></button>
+          <button class="card" data-select="" data-advance="q4"><span class="lead" data-icon="clock"></span>6 months to 1 year ago<span class="pick" data-icon="check"></span></button>
+          <button class="card" data-select="" data-advance="q4"><span class="lead" data-icon="clock"></span>1 to 2 years ago<span class="pick" data-icon="check"></span></button>
+          <button class="card" data-select="" data-advance="softstop"><span class="lead" data-icon="clock"></span>More than 2 years ago<span class="pick" data-icon="check"></span></button>
+        </div>
+      </section>
+
+      <!-- SOFT STOP -->
+      <section class="screen softstop" data-id="softstop" data-screen-label="Soft Stop">
+        <div class="warn-icon">⚠️</div>
+        <h1>Your Timeline May Be a Concern</h1>
+        <p class="sub">In Alabama, most personal injury claims must be filed within 2 years of the incident. Based on your answer, your deadline may have passed. A licensed attorney will still review your submission.</p>
+        <button class="cta" data-go="contact">Submit for Attorney Review →</button>
+        <button class="link-navy" data-back="">← Go Back</button>
+      </section>
+
+      <!-- SCREENS 4-15 generated by JS into here -->
+
+      <!-- SCREEN 16 — CONTACT -->
+      <section class="screen" data-id="contact" data-screen-label="Contact">
+        <div class="step-label">Step 14 of 14</div>
+        <div class="form-head">
+          <h1 style="font-weight:700;text-align:center;font-size:24px;padding:10px 0px 0px">Almost There - Where Should We Send Your Score?</h1>
+        </div>
+        <div class="field">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" placeholder="First name" autocomplete="given-name" required="">
+        </div>
+        <div class="field">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" placeholder="Last name" autocomplete="family-name" required="">
+        </div>
+        <div class="field">
+          <label>Phone Number <span class="req">*</span></label>
+          <input type="tel" placeholder="(000) 000-0000" autocomplete="tel" required="">
+          <span class="hint">We'll use this to contact you about your score.</span>
+        </div>
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" placeholder="you@email.com" autocomplete="email">
+          <span class="hint">Optional</span>
+        </div>
+        <button class="cta" data-go="score" style="margin-top:6px;color:#172D50;font-weight:600;">Submit My Case →</button>
+        <p class="disclaimer">By submitting, you agree to be contacted by a licensed attorney at The Maddox Law Firm regarding your claim. No upfront cost. No obligation.</p>
+      </section>
+
+      <!-- SCREEN 17 — SCORE / CATEGORY -->
+      <section class="screen score" data-id="score" data-screen-label="Score">
+        <div class="result-card">
+          <div class="rc-label">Preliminary Case Category</div>
+          <div class="rc-cat" id="catHeadline">Moderate</div>
+          <p class="rc-desc" id="catCopy">Based on your answers, your case appears to fall in the Moderate range.</p>
+          <div class="rc-hr"></div>
+          <div class="rc-label">Attorney-Confirmed Case Score</div>
+          <div class="rc-pending"><span class="rc-dot"></span>Pending Attorney Review</div>
+          <p class="rc-assessed"><strong>Assessed across:</strong> Liability · Damages · Evidence · Deadlines</p>
+        </div>
+        <a class="cta" href="portal.html" style="margin:0;color:#172D50;font-size:15px;text-decoration:none">Go to My Case Portal <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex:none"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <p class="rc-disclaimer">This is a preliminary category, not a final legal score. A licensed attorney will review your information and provide your confirmed Case Score.</p>
+        <div class="rc-hr mid"></div>
+        <div class="gac-sec">
+          <div class="rc-label">Your GotACase ID</div>
+          <div class="gac-id mono" id="gacIdVal">GAC-AL-2026-000184</div>
+          <p class="rc-idcopy">Your intake has been received and assigned a GotACase ID. Please keep this number for reference. This ID allows GotACase and the reviewing attorney to locate your case, review your facts, and provide the attorney-confirmed Case Score.</p>
+        </div>
+      </section>
+
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+<script>
+(function(){
+  /* ---------- Logo markup ---------- */
+  var logoSVG =
+    '<svg viewBox="0 0 360 96" width="100%" xmlns="http://www.w3.org/2000/svg">'
+    + '<g fill="none" stroke-linecap="round">'
+    +   '<path d="M14 70 A40 40 0 0 1 60 31" stroke="#172D50" stroke-width="9"/>'
+    +   '<path d="M60 31 A40 40 0 0 1 94 70" stroke="#D4AF37" stroke-width="9"/>'
+    +   '<line x1="54" y1="70" x2="72" y2="42" stroke="#172D50" stroke-width="7"/>'
+    + '</g>'
+    + '<circle cx="54" cy="70" r="5.5" fill="#172D50"/>'
+    + '<text x="112" y="60" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="50" letter-spacing="-1">'
+    +   '<tspan fill="#172D50">GotA</tspan><tspan fill="#D4AF37">Case</tspan>'
+    +   '<tspan fill="#172D50" font-size="20" dy="-22">™</tspan>'
+    + '</text>'
+    + '<g stroke="#D4AF37" stroke-width="1.6"><line x1="112" y1="80" x2="148" y2="80"/><line x1="304" y1="80" x2="340" y2="80"/></g>'
+    + '<text x="226" y="85" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="600" font-size="14" letter-spacing="1.5" fill="#172D50">HOW DOES YOUR CASE SCORE?</text>'
+    + '</svg>';
+  document.querySelectorAll('[data-logo]').forEach(function(el){el.innerHTML=logoSVG;});
+
+  /* ---------- Gold tick ---------- */
+  var tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+  document.querySelectorAll('[data-tick]').forEach(function(el){el.innerHTML=tick;});
+
+  /* ---------- Generate question screens 4-15 ---------- */
+  var questions = [
+    {id:'q4',  step:4,  q:"Was the other driver at fault?", icon:"car", img:"assets/images/quiz/crash.png"},
+    {id:'q5',  step:5,  q:"Were you physically injured?", icon:"boom", img:"assets/images/quiz/injured.png"},
+    {id:'q6',  step:6,  q:"Did your injuries require medical treatment?", icon:"cross", img:"assets/images/quiz/hospital.png"},
+    {id:'q7',  step:7,  q:"Are you still dealing with pain or limitations?", icon:"boom", img:"assets/images/quiz/pain.png"},
+    {id:'q8',  step:8,  q:"Do you have the other driver's insurance information?", img:"assets/images/quiz/insurance.png"},
+    {id:'q9',  step:9,  q:"Do you have photos or videos of the incident or your injuries?", icon:"flash", img:"assets/images/quiz/photos.png"},
+    {id:'q10', step:10, q:"Do you have a police report or incident report?", img:"assets/images/quiz/police.png"},
+    {id:'q11', step:11, q:"Do you have medical records related to your injuries?", img:"assets/images/quiz/medical.png"},
+    {id:'q12', step:12, q:"Were there any witnesses?", icon:"eye", img:"assets/images/quiz/witnesses.png"},
+    {id:'q13', step:13, q:"Did you seek medical treatment after the incident?", icon:"plus", img:"assets/images/quiz/treatment.png"},
+    {id:'q14', step:14, q:"Did you miss work because of your injuries?", icon:"clock", img:"assets/images/quiz/work.png"},
+    {id:'q15', step:14, q:"Are you still receiving treatment or dealing with ongoing effects?", img:"assets/images/quiz/ongoing.png"}
+  ];
+  var screensEl = document.getElementById('screens');
+  var contactEl = document.querySelector('[data-id="contact"]');
+  questions.forEach(function(item, i){
+    var next = (i < questions.length-1) ? questions[i+1].id : 'contact';
+    var sec = document.createElement('section');
+    sec.className = 'screen qalign';
+    sec.setAttribute('data-id', item.id);
+    sec.setAttribute('data-screen-label', item.id.toUpperCase());
+    sec.innerHTML =
+      '<div class="step-label">Step '+item.step+' of 14</div>'
+      + '<div class="qbody">'
+      +   '<div class="q-icon" data-icon="'+(item.icon||'clip')+'"></div>'
+      +   '<p class="question">'+item.q+'</p>'
+      +   '<div class="q-rule"></div>'
+      +   '<div class="yesno">'
+      +     '<button class="card" data-select data-advance="'+next+'">Yes<span class="pick" data-icon="check"></span></button>'
+      +     '<button class="card" data-select data-advance="'+next+'">No<span class="pick" data-icon="check"></span></button>'
+      +   '</div>'
+      +   (item.img ? '<img class="q-illus" src="'+item.img+'" alt="" />' : '')
+      + '</div>';
+    screensEl.insertBefore(sec, contactEl);
+  });
+
+  /* ---------- Icon badges & card icons ---------- */
+  var icons = {
+    pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>',
+    calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>',
+    clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 2"/></svg>',
+    grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg>',
+    clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="4" width="13" height="17" rx="2.5"/><path d="M9 4.5h6v3H9z"/><path d="M9 13.5l2 2 4-4"/></svg>',
+    lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+    car:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14l1.8-4.6A2 2 0 0 1 7.7 8h8.6a2 2 0 0 1 1.9 1.4L20 14v3H4z"/><circle cx="7.5" cy="17" r="1.6"/><circle cx="16.5" cy="17" r="1.6"/></svg>',
+    truck:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h11v9H3z"/><path d="M14 11h3.6l2.9 3v2.5H14z"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17.5" cy="17.5" r="1.6"/></svg>',
+    motorcycle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.2"/><circle cx="18" cy="16" r="3.2"/><path d="M6 16l3.6-4.6h4.2l2 4.6"/><path d="M9.6 11.4H15"/><path d="M3.6 11.4h3l1 2"/></svg>',
+    hospital:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V9l7-4 7 4v12z"/><path d="M12 9.5v4M10 11.5h4"/><path d="M9.5 21v-3h5v3"/></svg>',
+    building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3.5" width="12" height="17.5" rx="1"/><path d="M9 7.5h2M13 7.5h2M9 11h2M13 11h2"/><path d="M10.5 21v-3.5h3V21"/></svg>',
+    gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3.2v2.4M12 18.4v2.4M3.2 12h2.4M18.4 12h2.4M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg>',
+    box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l7.5 4v9L12 20.5 4.5 16.5v-9z"/><path d="M4.5 7.5l7.5 4 7.5-4M12 11.5v9"/></svg>',
+    heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5S4.5 15.5 4.5 9.8A3.8 3.8 0 0 1 12 7.4a3.8 3.8 0 0 1 7.5 2.4c0 5.7-7.5 10.7-7.5 10.7z"/><path d="M12.6 8l-2 3.6h3l-2 3.4"/></svg>',
+    paw:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="11" r="1.5"/><circle cx="12" cy="9" r="1.5"/><circle cx="17" cy="11" r="1.5"/><path d="M12 13c-2.4 0-3.9 1.7-3.9 3.3 0 1.3 1.4 1.6 3.9 1.6s3.9-.3 3.9-1.6c0-1.6-1.5-3.3-3.9-3.3z"/></svg>',
+    house:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11L12 4.5 20.5 11"/><path d="M6 9.6V20h12V9.6"/><path d="M10 20v-4.5h4V20"/></svg>',
+    triangle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8.5 14.5h-17z"/><path d="M12 10v4.4M12 16.8h.01"/></svg>',
+    question:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.3 9.2a2.7 2.7 0 1 1 3.8 2.5c-1.1.5-1.6 1.1-1.6 2.3"/><path d="M11.5 17.3h.01"/></svg>',
+    cross:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5h4v6.5h6.5v4H14v6.5h-4V14H3.5v-4H10z"/></svg>',
+    boom:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.2 4.6 4.9-1.6-1.7 4.8 4.6 2.2-4.6 2.2 1.7 4.8-4.9-1.6L12 21.5l-2.2-4.6-4.9 1.6 1.7-4.8L2 11.5l4.6-2.2L4.9 4.5l4.9 1.6z"/></svg>',
+    flash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h3l1.4-2.2h7.2L17 8.5h3v11H4z"/><circle cx="12" cy="14" r="3.4"/></svg>',
+    eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+    x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    check:tick
+  };
+  document.querySelectorAll('[data-icon]').forEach(function(el){ var k=el.getAttribute('data-icon'); if(icons[k]) el.innerHTML=icons[k]; });
+
+  /* ---------- Screen registry ---------- */
+  var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+  var byId = {};
+  screens.forEach(function(s,i){ byId[s.getAttribute('data-id')] = i; });
+
+  /* progress fraction per screen id */
+  var progress = {
+    state:1/16, casetype:2/16, date:3/16,
+    q4:4/16, q5:5/16, q6:6/16, q7:7/16, q8:8/16, q9:9/16,
+    q10:10/16, q11:11/16, q12:12/16, q13:13/16, q14:14/16, q15:15/16,
+    softstop:3/16, contact:1, score:1, attorney:1, confirm:1
+  };
+  var noBack = {intro:true, softstop:true, score:true, confirm:true};
+
+  /* ---------- Answer tracking ---------- */
+  window.answers = window.answers || {};
+  var gacId = '';
+
+  var current = byId['intro'];
+  var history = [];
+  var chrome = document.getElementById('chrome');
+  var backBtn = document.getElementById('back');
+  var bar = document.getElementById('bar');
+  var progLabel = document.getElementById('progLabel');
+  var animating = false;
+
+  function applyChrome(id){
+    if(id==='intro'){ chrome.classList.remove('show'); return; }
+    chrome.classList.add('show');
+    if(noBack[id]) backBtn.classList.remove('show'); else backBtn.classList.add('show');
+    var progWrap = document.querySelector('.chrome-progress');
+    if(id==='score' || id==='confirm'){
+      if(progWrap) progWrap.style.display='none';
+      return;
+    }
+    if(progWrap) progWrap.style.display='';
+    var f = progress[id]||0;
+    bar.style.width = (f*100)+'%';
+    progLabel.textContent = Math.round(f*100)+'% Completed';
+  }
+
+  function show(idx, dir){
+    if(animating || idx===current) return;
+    animating = true;
+    var cur = screens[current];
+    var nxt = screens[idx];
+    nxt.classList.add('notrans');
+    nxt.classList.remove('active','left','right');
+    nxt.classList.add(dir>0 ? 'right':'left');
+    void nxt.offsetWidth;
+    nxt.classList.remove('notrans');
+    void nxt.offsetWidth;
+    nxt.scrollTop = 0;
+    nxt.classList.remove('left','right');
+    nxt.classList.add('active');
+    cur.classList.remove('active');
+    cur.classList.add(dir>0 ? 'left':'right');
+    current = idx;
+    applyChrome(nxt.getAttribute('data-id'));
+    setTimeout(function(){ animating=false; }, 440);
+  }
+
+  function goTo(id){
+    if(animating) return;
+    var idx = byId[id];
+    if(idx===undefined || idx===current) return;
+    history.push(current);
+    show(idx, 1);
+  }
+  function goBack(){
+    if(animating || !history.length) return;
+    var idx = history.pop();
+    show(idx, -1);
+  }
+
+  /* #back is handled via the delegated [data-back] click handler below */
+
+  /* ---------- Toast ---------- */
+  var toast = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
+
+  /* ---------- Delegated clicks ---------- */
+  document.addEventListener('click', function(e){
+    var go = e.target.closest('[data-go]');
+    if(go){
+      var dest = go.getAttribute('data-go');
+      if(dest==='score'){ computeScore(); }
+      goTo(dest); return;
+    }
+
+    var back = e.target.closest('[data-back]');
+    if(back){ goBack(); return; }
+
+    var coming = e.target.closest('[data-coming]');
+    if(coming){ showToast('Coming soon — Auto is available now.'); return; }
+
+    var sel = e.target.closest('[data-select]');
+    if(sel){
+      var screen = sel.closest('.screen');
+      var qid = screen.getAttribute('data-id');
+      var txt = (sel.textContent||'').trim();
+      if(/^q\d+$/.test(qid)){
+        window.answers[qid] = /^yes/i.test(txt) ? 1 : 0;
+      } else if(qid==='date'){
+        window.answers.deadline = /more than 2 years/i.test(txt) ? 0 : 1;
+      }
+      screen.querySelectorAll('[data-select]').forEach(function(c){ c.classList.remove('selected'); });
+      sel.classList.add('selected');
+      var dest = sel.getAttribute('data-advance');
+      setTimeout(function(){ goTo(dest); }, 300);
+      return;
+    }
+  });
+
+  /* ---------- Score gauge ---------- */
+  function computeScore(){
+    var a = window.answers;
+    function avg(keys){
+      var s=0,n=0;
+      keys.forEach(function(k){ if(typeof a[k]==='number'){ s+=a[k]; n++; } });
+      return n ? s/n : 0;
+    }
+    var liability = (a.q4===1) ? 100 : 0;
+    var damages   = avg(['q5','q6','q7','q13','q14','q15']) * 100;
+    var evidence  = avg(['q8','q9','q10','q11','q12']) * 100;
+    var deadlines = (a.deadline===1) ? 100 : 20;
+    var raw   = liability*0.30 + damages*0.30 + evidence*0.20 + deadlines*0.20;
+    var score = Math.round(25 + (raw/100)*65);
+    if(!gacId){ gacId = 'GAC-AL-2026-' + ('000000'+Math.floor(Math.random()*1000000)).slice(-6); }
+    updateScoreScreen(score, {liability:liability, damages:damages, evidence:evidence, deadlines:deadlines});
+  }
+
+  function categoryFor(score){    if(score>=70) return 'Very Good';
+    if(score>=55) return 'Good';
+    if(score>=40) return 'Moderate';
+    return 'Poor';
+  }
+
+  function updateScoreScreen(score, dims){
+    var s = document.querySelector('[data-id="score"]');
+    if(!s) return;
+    var cat = categoryFor(score);
+    try{ localStorage.setItem('gac_score', score); localStorage.setItem('gac_category', cat); localStorage.setItem('gac_id', gacId); }catch(e){}
+    var head = s.querySelector('#catHeadline'); if(head) head.textContent = cat;
+    var idVal = document.getElementById('gacIdVal'); if(idVal) idVal.textContent = gacId;
+    var catVal = document.getElementById('gacCatVal'); if(catVal) catVal.textContent = cat;
+    var copy = s.querySelector('#catCopy'); if(copy) copy.textContent = 'Based on your answers, your case appears to fall in the '+cat+' range.';
+  }
+
+  screens[current].classList.add('active');
+  applyChrome('intro');
+})();
+</script>
+</body>
+</html>

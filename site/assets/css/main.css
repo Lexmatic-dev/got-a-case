@@ -1,63 +1,50 @@
 /* ==========================================================================
-   Got a Case – global styles
-   Mobile-first: base rules target phones, desktop overrides live in
-   @media (min-width: 1024px) blocks.
+   Got a Case – shared styles
+   Brand tokens plus the two components every page shares: the hamburger
+   menu in the top bar and the site footer. Page-specific styles live in a
+   <style> block inside each page for now (mirroring the design exports);
+   the desktop pass will pull more of them in here.
    ========================================================================== */
 
 :root {
-  /* Update these tokens from the design files once they are uploaded */
-  --color-bg: #ffffff;
-  --color-text: #111111;
-  --color-accent: #0055ff;
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --gutter: 16px;
-  --max-width: 1200px;
+  --gac-navy: #172D50;
+  --gac-gold: #D4AF37;
+  --gac-steel: #8C96A3;
+  --gac-cream: #FDF6DC;
+  --gac-line: #ECECEC;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* ---- Hamburger menu (<details> based, works without JS) ---- */
+.menu { position: relative; flex: none; }
+.menu summary {
+  display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+  width: 40px; height: 40px; padding: 0; margin: 0;
+  background: transparent; border: none; border-radius: 50%; cursor: pointer; list-style: none;
 }
+.menu summary::-webkit-details-marker { display: none; }
+.menu summary span { display: block; width: 22px; height: 2px; background: var(--gac-navy); border-radius: 2px; }
+.menu[open] summary { background: rgba(23,45,80,0.06); }
+.menu-panel {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 80; min-width: 210px;
+  background: #FFFFFF; border: 1px solid var(--gac-line); border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(23,45,80,0.16); padding: 8px;
+}
+.menu-panel a {
+  display: block; padding: 11px 13px; border-radius: 9px; text-decoration: none;
+  color: var(--gac-navy); font-size: 14px; font-weight: 600;
+}
+.menu-panel a:hover { background: var(--gac-cream); }
 
-html {
-  -webkit-text-size-adjust: 100%;
-}
-
-body {
-  margin: 0;
-  font-family: var(--font-body);
-  color: var(--color-text);
-  background: var(--color-bg);
-  line-height: 1.5;
-}
-
-img,
-svg,
-video {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-.container {
-  width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-}
-
-/* Temporary placeholder until the home design is in */
-.placeholder {
-  min-height: 100vh;
-  display: grid;
-  place-content: center;
-  text-align: center;
-  padding: var(--gutter);
-}
-
-@media (min-width: 1024px) {
-  :root {
-    --gutter: 32px;
-  }
-}
+/* ---- Footer ---- */
+.footer { background: var(--gac-navy); padding: 44px 28px 34px; text-align: center; }
+.footer .f-logo { margin-bottom: 14px; }
+.footer .f-logo-img { height: 29px; width: auto; display: inline-block; }
+.footer .f-tag { color: #FFFFFF; font-size: 15px; font-weight: 600; font-style: italic; margin-bottom: 24px; }
+.footer .f-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px; margin-bottom: 24px; font-size: 11px; }
+.footer .f-links a { color: rgba(255,255,255,0.85); font-weight: 600; text-decoration: none; }
+.footer .f-links a:hover { color: var(--gac-gold); }
+.footer .f-legal { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; max-width: 360px; margin: 0 auto 16px; }
+.footer .f-entity { color: rgba(255,255,255,0.82); font-size: 12.5px; line-height: 1.55; font-weight: 600; margin: 0 0 8px; }
+.footer .f-disclaimer { color: var(--gac-steel); font-size: 11px; line-height: 1.6; font-weight: 500; margin: 0 0 6px; }
+.footer .f-advertising { color: var(--gac-steel); font-size: 11px; line-height: 1.6; font-weight: 500; margin: 0; }
+.footer .copy { color: rgba(255,255,255,0.5); font-size: 11.5px; font-weight: 600; margin: 0; }
